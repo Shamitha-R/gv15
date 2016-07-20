@@ -1,5 +1,5 @@
 # gv15#
-Online Genome visualization using Sequence Bundles
+Genome visualization using Sequence Bundles
 
 #References
   Multiple sequence alignments (MSA) visualization method - Sequence Bundles 
