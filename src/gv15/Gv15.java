@@ -402,9 +402,9 @@ public class Gv15 extends Application {
     private static void Process() throws Exception{
         
         //Parse VCF File
-        VcfParser.Builder test = new VcfParser.Builder().
-                fromReader(new BufferedReader(new InputStreamReader(Gv15.class.getResourceAsStream(
-                        "C:\\Users\\ranasi01\\Documents\\Project\\Data\\variants.vcf"))));
+//        VcfParser.Builder test = new VcfParser.Builder().
+//                fromReader(new BufferedReader(new InputStreamReader(Gv15.class.getResourceAsStream(
+//                        "C:\\Users\\ranasi01\\Documents\\Project\\Data\\variants.vcf"))));
         
         //"C:\\Users\\ranasi01\\Documents\\Project\\Data\\variants.vcf"
         
@@ -429,9 +429,9 @@ public class Gv15 extends Application {
         String[] bamFiles = new String[]{           
             //"samples\\chr1_871234_871434_DA0059011_IonXpress_001_rawlib.bam",
             //"samples\\chr1_871234_871434_DA0057131_IonXpress_002_rawlib.bam"
-            //"samples\\chr1_871234_871434_DA0057156_IonXpress_003_rawlib.bam",
+            "samples\\chr1_871234_871434_DA0057156_IonXpress_003_rawlib.bam",
             //"samples\\chr1_871234_871434_DA0057131_IonXpress_004_rawlib.bam"
-            "samples\\chr1_871234_871434_DA0059025_IonXpress_005_rawlib.bam"
+            //"samples\\chr1_871234_871434_DA0059025_IonXpress_005_rawlib.bam"
             //"samples\\chr1_871234_871434_DA0057129_IonXpress_012_rawlib.bam",
             //"data00.bam"
         };
@@ -916,7 +916,7 @@ public class Gv15 extends Application {
     
     private static File SetPrefsFile(){
 	// Ensure the .scri-bioinf folder exists
-	File fldr = new File(System.getProperty("user.home"), ".scri-bioinf");
+	File fldr = new File("C:\\Users\\ranasi01\\Documents\\Project\\gv15", ".scri-bioinf");
 	fldr.mkdirs();  
         
         // Color-prefs file
