@@ -15,8 +15,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-import java.util.Random;
-
 import  io.*;
 import data.cache.*;
 import data.*;
@@ -26,6 +24,9 @@ import data.auxiliary.CigarEvent;
 import data.auxiliary.CigarFeature;
 import data.auxiliary.CigarInsertEvent;
 import data.auxiliary.Feature;
+import htsjdk.variant.variantcontext.VariantContext;
+import htsjdk.variant.vcf.VCFFileReader;
+import htsjdk.variant.vcf.VCFHeader;
 import java.io.BufferedReader;
 
 import java.io.File;
@@ -38,7 +39,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.pharmgkb.parser.vcf.VcfParser;
 
 
 /**
@@ -330,7 +330,9 @@ public class Gv15 extends Application {
         
         return renderTexts;
     }
-       
+    
+   // private ArrayList<Text> SetupRenderTitle()
+    
    /**
     * 
     * @param rows
@@ -400,14 +402,19 @@ public class Gv15 extends Application {
     }
     
     private static void Process() throws Exception{
+
+        //Import Variants
+        File vcfFile = new File("C:\\Users\\ranasi01\\Documents\\Project\\Data\\variants.vcf");
+        VCFFileReader reader = new VCFFileReader(vcfFile, false);
+        VCFHeader headerOne = reader.getFileHeader();
         
-        //Parse VCF File
-//        VcfParser.Builder test = new VcfParser.Builder().
-//                fromReader(new BufferedReader(new InputStreamReader(Gv15.class.getResourceAsStream(
-//                        "C:\\Users\\ranasi01\\Documents\\Project\\Data\\variants.vcf"))));
-        
-        //"C:\\Users\\ranasi01\\Documents\\Project\\Data\\variants.vcf"
-        
+        List<String> sampleList = new ArrayList<String>();
+        sampleList.addAll(headerOne.getSampleNamesInOrder());
+
+        for(VariantContext context:reader.iterator().toList()){
+            System.err.println("");
+        }
+         
         SetPrefsFile();
 
          //Import phenotypes
@@ -948,6 +955,5 @@ public class Gv15 extends Application {
         }
         
         return "N";
-    }
-      
+    }     
 }
