@@ -24,6 +24,8 @@ import data.auxiliary.CigarEvent;
 import data.auxiliary.CigarFeature;
 import data.auxiliary.CigarInsertEvent;
 import data.auxiliary.Feature;
+
+import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 import htsjdk.variant.vcf.VCFHeader;
@@ -39,8 +41,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-
 /**
  *
  * @author ranasi01
@@ -56,17 +56,13 @@ public class Gv15 extends Application {
     static int VariancePos = 871334;
     
     //Render Area Settings
-    float GridStartX = 150;
-    float GridStartY = 200;
-    int ColumnWidth = 65;
-    int RowHeight = 20;
+    static float GridStartX = 150;
+    static float GridStartY = 200;
+    static int ColumnWidth = 65;
+    static int RowHeight = 20;
     int FragmentXOffset = 20; 
 
-    private static class FragmentNode{
-        public int ReadCount;
-        public HashMap<String,HashSet> ConnectedFragments = new HashMap<String, HashSet>();
-    }
- 
+
     private static class Phenotype{
         private enum PhenotypeCat{ NORMAL, CONTROL, CIN3, NEG_CONTROL };
         
@@ -80,34 +76,17 @@ public class Gv15 extends Application {
     private static Map<String,FragmentNode>[] Fragments;
     
     static ArrayList<String> testReference;
-    static Map<String,FragmentNode>[] testFragments;
+    static VariantContext testContext;
+    
+    private static Panel testPanel;
       
     @Override public void start(Stage stage) {
-                
-        Line line = new Line();
-        line.setStartX(139.0f);
-        line.setStartY(102.5f);
-        line.setEndX(155.0f);
-        line.setEndY(102.5f);
-        line.setStroke(Color.ORANGE);
-        line.setStrokeWidth(6);
 
-        ArrayList<Line> renderArea = SetupRenderArea(11, (Flank*2)+1, ColumnWidth, 
-                RowHeight, GridStartX, GridStartY);
-        ArrayList<Text> referenceText = SetupReferenceRender(GridStartX,GridStartY,
-                RowHeight,ColumnWidth);
-        ArrayList<Shape> readRenders = SetupFragments(GridStartX,GridStartY, 
-                RowHeight,ColumnWidth, (Flank*2)+1);
-        ArrayList<Line> renderVariance = SetupVariance(GridStartX,GridStartY, 
-                Flank+ShiftVal,ColumnWidth, RowHeight);
+        Group root = new Group();         
+        testPanel.RenderPanel(root,testReference,MAXREADCOUNT);
 
-        Group root = new Group();
+        root.getChildren().add(SetupChartDetails((int) (WIDTH/2), 100));
 
-        root.getChildren().addAll(renderArea);
-        root.getChildren().addAll(referenceText);
-        root.getChildren().addAll(readRenders);
-        root.getChildren().addAll(renderVariance);
-        
         Scene scene = new Scene(
                 root,
                 WIDTH, HEIGHT,
@@ -120,278 +99,27 @@ public class Gv15 extends Application {
         //stage.setMaximized(true);
     }
     
-    private ArrayList<Shape> SetupFragments(float gridX, float gridY, 
-            float rowHeight, float colWidth,int cols){
-        ArrayList<Shape> renderElements = new ArrayList<>();
+    private Text SetupChartDetails(int startX,int startY){
+        Text details = new Text(startX,startY,"");
+        details.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
+        details.setFill(Color.LIGHTSLATEGREY);
+        //details.setA
         
-        int XOFFSET = FragmentXOffset;
-        int YOFFSET = 4;
-           
-        for(int colNum = 0;colNum<cols;colNum++){
-            for(int baseType = 0;baseType<5;baseType++){
-                
-                if(testFragments[colNum]!=null &&
-                        testFragments[colNum].containsKey(RowNumberToBaseType(baseType))){
-                    
-                    FragmentNode val = testFragments[colNum].get(RowNumberToBaseType(baseType));
-                    
-                    float readSize = 1 + (val.ReadCount/(MAXREADCOUNT*1.0f)*13.0f);
-                    
-                    //Draw primary lines
-                    Line tempLine = new Line();
-                    tempLine.setStartX((colNum * colWidth) + gridX + XOFFSET + (readSize/2) );
-                    tempLine.setStartY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
-                    tempLine.setEndX((colNum* colWidth)+colWidth + gridX - XOFFSET - (readSize/2));
-                    tempLine.setEndY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
-                    tempLine.setStrokeWidth(readSize);
-                    
-                    if(testReference.get(colNum)!="INS"){
-                        if(testReference.get(colNum).equals(RowNumberToBaseType(baseType)))
-                            tempLine.setStroke(Color.GAINSBORO);
-                        else
-                            tempLine.setStroke(Color.ORANGE);
-                    }else
-                        tempLine.setStroke(Color.BLUEVIOLET);
-                    
-                    renderElements.add(tempLine); 
-                    
-                    //Connect the fragments
-                    if(colNum < (cols)){
-                        for(int nextBase = 0;nextBase<5;nextBase++){
-                            if(val.ConnectedFragments != null &&
-                                    val.ConnectedFragments.containsKey(RowNumberToBaseType(nextBase))){
-                                
-                                String connectedVal = RowNumberToBaseType(nextBase);
-                                HashSet<Integer> connectedColumns = val.ConnectedFragments.get(RowNumberToBaseType(nextBase));
-
-                                for (Integer colVal : connectedColumns) {
-                                    
-                                    float nextReadSize = 1 + ((testFragments[colVal].get(connectedVal).ReadCount
-                                        /(MAXREADCOUNT*1.0f))*13.0f);    
-                                
-                                    if(nextBase == baseType){
-                                        Line connectorLine = new Line();
-                                        connectorLine.setStartX((colNum* colWidth)+colWidth + gridX - XOFFSET - (readSize/2));
-                                        connectorLine.setEndX(((colVal) * colWidth) + gridX + XOFFSET + (readSize/2));
-
-                                        if(nextReadSize<readSize){                                      
-                                            connectorLine.setStrokeWidth(nextReadSize);
-                                            connectorLine.setStartY((baseType * rowHeight * 2) + gridY + YOFFSET + (nextReadSize/2));
-                                            connectorLine.setEndY((baseType * rowHeight * 2) + gridY + YOFFSET + (nextReadSize/2));
-                                        }else{
-                                            connectorLine.setStrokeWidth(readSize);
-                                            connectorLine.setStartY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
-                                            connectorLine.setEndY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
-                                        }
-                                        if(testReference.get(colNum)=="INS"  || testReference.get(colVal)=="INS")                                        
-                                            connectorLine.setStroke(Color.BLUEVIOLET);
-                                        else{
-                                            if(testReference.get(colVal).equals(RowNumberToBaseType(baseType)))
-                                                connectorLine.setStroke(Color.GAINSBORO);
-                                            else
-                                                connectorLine.setStroke(Color.ORANGE);
-                                        }
-
-                                        renderElements.add(connectorLine);  
-                                    }else{
-                                        //Join the fragments
-                                        CubicCurve tempCurve = new CubicCurve(
-                                            (colNum* colWidth)+colWidth + gridX - XOFFSET,
-                                            (baseType * rowHeight * 2) + gridY + YOFFSET,
-
-                                            (colNum* colWidth)+colWidth + gridX - XOFFSET + 18,
-                                            (baseType * rowHeight * 2) + gridY + YOFFSET,
-
-                                            ((colVal) * colWidth) + gridX + XOFFSET  - 18,
-                                            (nextBase * rowHeight * 2) + gridY + YOFFSET,
-
-                                            ((colVal) * colWidth) + gridX + XOFFSET,
-                                            (nextBase * rowHeight * 2) + gridY + YOFFSET
-                                        );
-                                        if(testReference.get(colNum)=="INS" || testReference.get(colVal)=="INS")
-                                            tempCurve.setStroke(Color.BLUEVIOLET);
-                                        else{
-                                            if(testReference.get(colNum).equals(RowNumberToBaseType(baseType)) &&
-                                                    testReference.get(colVal).equals(RowNumberToBaseType(nextBase)))
-                                                tempCurve.setStroke(Color.GAINSBORO);
-                                            else
-                                                tempCurve.setStroke(Color.ORANGE);
-                                        }
-                                        tempCurve.setFill(null);
-                                        renderElements.add(tempCurve);      
-
-                                        Path path = new Path();
-                                        for (int i = 0; i <= nextReadSize-1; i++) {
-                                            path.getElements().addAll(
-                                                    new MoveTo(tempCurve.getStartX(), tempCurve.getStartY()),
-                                                    new CubicCurveTo(
-                                                            tempCurve.getControlX1() ,
-                                                            tempCurve.getControlY1() ,
-                                                            tempCurve.getControlX2() ,
-                                                            tempCurve.getControlY2() ,
-                                                            tempCurve.getEndX() ,
-                                                            tempCurve.getEndY() + i 
-                                                    )
-                                            );            
-                                        }
-                                        path.setStroke(tempCurve.getStroke());
-                                        
-                                        Path path2 = new Path();
-                                        for (int i = 0; i <= readSize-1; i++) {
-                                            path2.getElements().addAll(
-                                                    new MoveTo(tempCurve.getStartX(), tempCurve.getStartY() + i),
-                                                    new CubicCurveTo(
-                                                            tempCurve.getControlX1() ,
-                                                            tempCurve.getControlY1() ,
-                                                            tempCurve.getControlX2() ,
-                                                            tempCurve.getControlY2() ,
-                                                            tempCurve.getEndX() ,
-                                                            tempCurve.getEndY() 
-                                                    )
-                                            );            
-                                        }
-                                        path2.setStroke(tempCurve.getStroke());
-                                        
-                                        renderElements.add(path);
-                                        renderElements.add(path2);
-                                    }                                    
-                                }          
-                            }
-                        }
-                    }
-                }
+        String displayText = testContext.getContig() +
+                ":" + testContext.getStart() + " ";
+        
+        for(Allele curAllele:testContext.getAlleles()){
+            for(byte base:curAllele.getBases()){
+                displayText+=Character.toString ((char) base);
             }
+            displayText+=">";
         }
- 
-        return renderElements;
+
+        details.setText(displayText.substring(0, displayText.length()-1));
+
+        return details;
     }
     
-    private ArrayList<Line> SetupVariance(float gridX, float gridY, int varianceCol,
-            float colWidth,float rowHeight){
-        ArrayList<Line> renderItems = new ArrayList();
-        
-        Line tempLine = new Line();
-        tempLine.setStartX(gridX + (varianceCol * colWidth));
-        tempLine.setStartY(gridY - rowHeight);
-        tempLine.setEndX(gridX + (varianceCol * colWidth));
-        tempLine.setEndY(gridY + (5 * (rowHeight*2)));
-        tempLine.setStrokeWidth(1);
-        tempLine.setStroke(Color.RED);
-            
-        renderItems.add(tempLine);
-
-        Line tempLine2 = new Line();
-        tempLine2.setStartX(gridX + ((varianceCol+1) * colWidth));
-        tempLine2.setStartY(gridY - rowHeight);
-        tempLine2.setEndX(gridX + ((varianceCol+1) * colWidth));
-        tempLine2.setEndY(gridY + (5 * (rowHeight*2)));
-        tempLine2.setStrokeWidth(1);
-        tempLine2.setStroke(Color.RED);
-        
-        renderItems.add(tempLine2);
-
-        return renderItems;
-    }
-
-    private String RowNumberToBaseType(int num){
-        switch(num){
-            case 0: return "A";
-            case 1: return "C";
-            case 2: return "G";
-            case 3: return "T";
-            case 4: return "N";
-        }
-        
-        return "N";
-    }
-
-    /**
-     * 
-     * @param cols
-     * @return 
-     */
-    private ArrayList<Text> SetupReferenceRender(float startX,float startY,int rowHeight,int colWidth){
-        ArrayList<Text> renderTexts = new ArrayList<Text>();
-        
-        //Reference BasePairs
-        for(int refIndex = 0;refIndex<testReference.size();refIndex++){
-            Text tempText = new Text(startX + (colWidth*refIndex) + (colWidth/2), 
-                    startY, testReference.get(refIndex));
-            renderTexts.add(tempText);
-        }
-        
-        //Read BasePair Types
-        for(int baseType = 0;baseType<5;baseType++){
-            Text tempText = new Text(startX - 25, 
-                    startY + (baseType*rowHeight*2) + 25,RowNumberToBaseType(baseType));
-            tempText.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
-            renderTexts.add(tempText);
-        }
-        
-        return renderTexts;
-    }
-    
-   // private ArrayList<Text> SetupRenderTitle()
-    
-   /**
-    * 
-    * @param rows
-    * @param cols
-    * @param colWidth
-    * @param rowHeight
-    * @param startX
-    * @param startY
-    * @return 
-    */
-    private ArrayList<Line> SetupRenderArea(int rows,int cols, double colWidth,double rowHeight
-                                            ,double startX, double startY){
-        ArrayList<Line> renderComponents = new ArrayList<>();
-        
-        //Piano lines
-        boolean alter = false;
-        for(int row = 0;row<rows;row++){
-            Line tempLine = new Line();
-            tempLine.setStartX(startX + (rowHeight/2));
-            tempLine.setStartY(startY + (row * rowHeight) + (rowHeight/2));
-            tempLine.setEndX(startX + (cols+1) * colWidth - (rowHeight/2));
-            tempLine.setEndY(startY + (row * rowHeight) + (rowHeight/2));
-            tempLine.setStrokeWidth(rowHeight);
-            
-            if(alter){
-                tempLine.setStroke(Color.WHITE);
-                alter = false;
-                renderComponents.add(tempLine);
-                
-                Line footerLine = new Line();
-                footerLine.setStartX(startX - 25);
-                footerLine.setStartY(startY + (row * rowHeight) + (rowHeight));
-                footerLine.setEndX(startX );
-                footerLine.setEndY(startY + (row * rowHeight) + (rowHeight));
-                footerLine.setStrokeWidth(1);    
-                footerLine.setStroke(Color.GREY);               
-                renderComponents.add(footerLine);
-            }else{
-                tempLine.setStroke(Color.GHOSTWHITE);
-                alter = true;
-                renderComponents.add(tempLine);
-            }            
-           
-        }
-        //Table borders
-        for(int col = 0; col<=cols;col++){
-            Line tempLine = new Line();
-            tempLine.setStartX(startX + (col * colWidth));
-            tempLine.setStartY(startY);
-            tempLine.setEndX(startX + (col * colWidth));
-            tempLine.setEndY(startY + (rows * rowHeight));
-            tempLine.setStrokeWidth(1);
-            tempLine.setStroke(Color.LIGHTGREY);
-            
-            renderComponents.add(tempLine);
-        }
-        
-        return renderComponents;
-    }
     /**
      * @param args the command line arguments
      */
@@ -403,6 +131,10 @@ public class Gv15 extends Application {
     
     private static void Process() throws Exception{
 
+        //Setup Panels
+        testPanel = new Panel("Control", GridStartX, GridStartY,(Flank*2)+1,5,
+        ColumnWidth,RowHeight);
+        
         //Import Variants
         File vcfFile = new File("C:\\Users\\ranasi01\\Documents\\Project\\Data\\variants.vcf");
         VCFFileReader reader = new VCFFileReader(vcfFile, false);
@@ -412,7 +144,8 @@ public class Gv15 extends Application {
         sampleList.addAll(headerOne.getSampleNamesInOrder());
 
         for(VariantContext context:reader.iterator().toList()){
-            System.err.println("");
+            testContext = context;
+            break;
         }
          
         SetPrefsFile();
@@ -435,7 +168,7 @@ public class Gv15 extends Application {
         
         String[] bamFiles = new String[]{           
             //"samples\\chr1_871234_871434_DA0059011_IonXpress_001_rawlib.bam",
-            //"samples\\chr1_871234_871434_DA0057131_IonXpress_002_rawlib.bam"
+            "samples\\chr1_871234_871434_DA0057131_IonXpress_002_rawlib.bam",
             "samples\\chr1_871234_871434_DA0057156_IonXpress_003_rawlib.bam",
             //"samples\\chr1_871234_871434_DA0057131_IonXpress_004_rawlib.bam"
             //"samples\\chr1_871234_871434_DA0059025_IonXpress_005_rawlib.bam"
@@ -453,7 +186,7 @@ public class Gv15 extends Application {
                 FragmentsCollection.clear();
                 
                 ReferenceDataCollection.add(testReference);
-                FragmentsCollection.add(testFragments);
+                FragmentsCollection.add(testPanel.Fragments);
             }
             
             String[] filenames  = new String[]{
@@ -745,13 +478,13 @@ public class Gv15 extends Application {
                 AdjustForInsertions(ReferenceDataCollection.get(0), FragmentsCollection.get(0), testReference);
 
                 //Combine Fragments
-                testFragments = CombineFragments(FragmentsCollection.get(0), FragmentsCollection.get(1), 
+                testPanel.Fragments = CombineFragments(FragmentsCollection.get(0), FragmentsCollection.get(1), 
                         ReferenceDataCollection.get(0), ReferenceDataCollection.get(1), testReference.size());
 
-                FragmentPrinter(testFragments);                
+                FragmentPrinter(testPanel.Fragments);                
             }else{
                 testReference = ReferenceDataCollection.get(0);
-                testFragments = FragmentsCollection.get(0);
+                testPanel.Fragments = FragmentsCollection.get(0);
             }
         }
     }
