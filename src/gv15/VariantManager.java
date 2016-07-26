@@ -1,14 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gv15;
 
+import htsjdk.variant.variantcontext.VariantContext;
 /**
  *
  * @author ranasi01
  */
 public class VariantManager {
+    private VariantContext selectedVariant;
     
+    public VariantContext getSelectedVariant(){
+        return selectedVariant;
+    }
 }

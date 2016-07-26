@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public class Gv15 extends Application {
     
-    private static final double WIDTH = 1280, HEIGHT = 720;
+    private static final double WIDTH = 1280, HEIGHT = 768;
     private static ArrayList<String> ReferenceData;
     private static int MAXREADCOUNT;
        
@@ -57,7 +57,7 @@ public class Gv15 extends Application {
     
     //Render Area Settings
     static float GridStartX = 150;
-    static float GridStartY = 200;
+    static float GridStartY = 100;
     static int ColumnWidth = 65;
     static int RowHeight = 20;
     int FragmentXOffset = 20; 
@@ -79,13 +79,15 @@ public class Gv15 extends Application {
     static VariantContext testContext;
     
     private static Panel testPanel;
+    private static Panel testPanel2;
       
     @Override public void start(Stage stage) {
 
         Group root = new Group();         
         testPanel.RenderPanel(root,testReference,MAXREADCOUNT);
+        testPanel2.RenderPanel(root, testReference, MAXREADCOUNT);
 
-        root.getChildren().add(SetupChartDetails((int) (WIDTH/2), 100));
+        root.getChildren().add(SetupChartDetails((int) (WIDTH/2), 50));
 
         Scene scene = new Scene(
                 root,
@@ -96,7 +98,7 @@ public class Gv15 extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-        //stage.setMaximized(true);
+        stage.setMaximized(true);
     }
     
     private Text SetupChartDetails(int startX,int startY){
@@ -133,6 +135,8 @@ public class Gv15 extends Application {
 
         //Setup Panels
         testPanel = new Panel("Control", GridStartX, GridStartY,(Flank*2)+1,5,
+        ColumnWidth,RowHeight);
+        testPanel2 = new Panel("Control", GridStartX, GridStartY+290,(Flank*2)+1,5,
         ColumnWidth,RowHeight);
         
         //Import Variants
@@ -480,11 +484,14 @@ public class Gv15 extends Application {
                 //Combine Fragments
                 testPanel.Fragments = CombineFragments(FragmentsCollection.get(0), FragmentsCollection.get(1), 
                         ReferenceDataCollection.get(0), ReferenceDataCollection.get(1), testReference.size());
+                testPanel2.Fragments = CombineFragments(FragmentsCollection.get(0), FragmentsCollection.get(1), 
+                        ReferenceDataCollection.get(0), ReferenceDataCollection.get(1), testReference.size());
 
                 FragmentPrinter(testPanel.Fragments);                
             }else{
                 testReference = ReferenceDataCollection.get(0);
                 testPanel.Fragments = FragmentsCollection.get(0);
+                testPanel2.Fragments = FragmentsCollection.get(0);
             }
         }
     }
