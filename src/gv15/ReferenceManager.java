@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gv15;
 
 import java.util.ArrayList;
@@ -12,13 +7,36 @@ import java.util.ArrayList;
  * @author ranasi01
  */
 public class ReferenceManager {
-    private ArrayList<String> referenceData;
+    public ArrayList<String> ReferenceData;
+    public int ShiftVal;
     
     public ReferenceManager(){
-        referenceData = new ArrayList();
+        ReferenceData = new ArrayList();
     }
-    
-    public ArrayList<String> getReference(){
-        return referenceData;
+
+    public ArrayList<String> CombineReferences(ArrayList<String> ref00,ArrayList<String> ref01){
+        ArrayList<String> combineRef = new ArrayList();
+                
+        int index00 = 0;
+        int index01 = 0;
+        while(index00<ref00.size() &&
+                index01<ref01.size()){
+
+            if(ref00.get(index00).
+                    equals(ref01.get(index01))){
+                combineRef.add(ref00.get(index00));
+                index00++;
+                index01++;
+            }else if(ref00.get(index00).equals("INS")){
+                combineRef.add("INS");
+                index00++;
+            }else if(ref01.get(index01).equals("INS")){
+                combineRef.add("INS");
+                index01++;
+            }
+        }        
+        
+        return combineRef;
     }
+ 
 }

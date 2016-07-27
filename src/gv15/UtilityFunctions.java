@@ -24,4 +24,21 @@ public class UtilityFunctions {
         }        
         return "N";
     }
+    
+    public String GetBaseFromVal(int val){
+        switch (val){
+            case 6: return "A";
+            case 7: return "A";
+            case 8: return "C";
+            case 9: return "C";
+            case 10: return "G";
+            case 11: return "G";
+            case 12: return "T";
+            case 13: return "T";
+            
+            default: break;
+        }
+        
+        return "N";
+    }  
 }

@@ -1,7 +1,6 @@
 package gv15;
 
 import static gv15.Gv15.Flank;
-import static gv15.Gv15.testReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class Panel {
     private double rowHeight;
     
     public Panel(String ID,double positionX,double positionY,
-            int columns,int rows,double columnWidth,double rowHeight){
+        int columns,int rows,double columnWidth,double rowHeight){
         this.PanelID = ID;
         this.PositionX = positionX;
         this.PositionY = positionY;
@@ -55,8 +54,8 @@ public class Panel {
                 rowHeight, PositionX, PositionY);        
         ArrayList<Shape> referenceRender = SetupReferenceRender(refereneceData,
                 PositionX,PositionY,rowHeight,columnWidth);  
-        ArrayList<Shape> fragmentRenders = SetupFragments(PositionX, PositionY, 
-                rowHeight, columnWidth, columns, maxReadCount);
+        ArrayList<Shape> fragmentRenders = SetupFragments(refereneceData,
+                PositionX, PositionY, rowHeight, columnWidth, columns, maxReadCount);
        
         renderGroup.getChildren().addAll(renderArea);
         renderGroup.getChildren().addAll(referenceRender);
@@ -164,8 +163,9 @@ public class Panel {
         return renderTexts;
     }
 
-    private ArrayList<Shape> SetupFragments(double gridX, double gridY, 
-            double rowHeight, double colWidth,int cols,int maxReadCount){
+    private ArrayList<Shape> SetupFragments(ArrayList<String> referenceData,
+            double gridX, double gridY, double rowHeight, 
+            double colWidth,int cols,int maxReadCount){
         ArrayList<Shape> renderElements = new ArrayList<>();
         
         int XOFFSET = FragmentXOffset;
@@ -191,8 +191,8 @@ public class Panel {
                     tempLine.setEndY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
                     tempLine.setStrokeWidth(readSize);
                     
-                    if(testReference.get(colNum)!="INS"){
-                        if(testReference.get(colNum).equals(UtilityFunctions.
+                    if(referenceData.get(colNum)!="INS"){
+                        if(referenceData.get(colNum).equals(UtilityFunctions.
                             getInstance().RowNumberToBaseType(baseType)))
                             tempLine.setStroke(Color.GAINSBORO);
                         else
@@ -233,10 +233,10 @@ public class Panel {
                                             connectorLine.setStartY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
                                             connectorLine.setEndY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
                                         }
-                                        if(testReference.get(colNum)=="INS"  || testReference.get(colVal)=="INS")                                        
+                                        if(referenceData.get(colNum)=="INS"  || referenceData.get(colVal)=="INS")                                        
                                             connectorLine.setStroke(Color.BLUEVIOLET);
                                         else{
-                                            if(testReference.get(colVal).equals(UtilityFunctions.
+                                            if(referenceData.get(colVal).equals(UtilityFunctions.
                                                     getInstance().RowNumberToBaseType(baseType)))
                                                 connectorLine.setStroke(Color.GAINSBORO);
                                             else
@@ -259,12 +259,12 @@ public class Panel {
                                             ((colVal) * colWidth) + gridX + XOFFSET,
                                             (nextBase * rowHeight * 2) + gridY + YOFFSET
                                         );
-                                        if(testReference.get(colNum)=="INS" || testReference.get(colVal)=="INS")
+                                        if(referenceData.get(colNum)=="INS" || referenceData.get(colVal)=="INS")
                                             tempCurve.setStroke(Color.BLUEVIOLET);
                                         else{
-                                            if(testReference.get(colNum).equals(UtilityFunctions.
+                                            if(referenceData.get(colNum).equals(UtilityFunctions.
                                                     getInstance().RowNumberToBaseType(baseType)) &&
-                                                    testReference.get(colVal).equals(UtilityFunctions.
+                                                    referenceData.get(colVal).equals(UtilityFunctions.
                                                     getInstance().RowNumberToBaseType(nextBase)))
                                                 tempCurve.setStroke(Color.GAINSBORO);
                                             else

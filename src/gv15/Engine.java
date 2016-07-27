@@ -1,7 +1,10 @@
 package gv15;
 
-import static gv15.Gv15.testReference;
+import data.cache.ConsensusFileCache;
 import htsjdk.variant.variantcontext.Allele;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -15,12 +18,12 @@ import javafx.stage.Stage;
  *
  * @author ranasi01
  */
-public class Engine extends Application {
+public class Engine{
     
     //Engine Settings
     public double WIDTH = 1280, HEIGHT = 768;
     public int FLANK = 7;
-    public String Path = "";
+    public String DataPath = "C:\\Users\\ranasi01\\Documents\\Project\\Data";
 
     public float GridStartX = 150;
     public float GridStartY = 100;
@@ -36,17 +39,35 @@ public class Engine extends Application {
     FragmentManager fragmentManager;
     ReferenceManager referenceManager;
        
-    public Engine(String[] args){
+    public Engine(){
         
-        //Launch the JavaFX application
-        launch(args); 
+        //Setup Import Utils
+        dataManager = new DataManager(DataPath);
+        SetPrefsFile();
+        
+        //Setup Panels
+        panelManager = new PanelManager();
+        panelManager.AddPanel("Control", GridStartX, GridStartY, FLANK, ColumnWidth, RowHeight);
+        
+        //Setup Variants
+        variantManager = new VariantManager(dataManager.ImportVCFFile());
+        
+        //Setup Fragments
+        referenceManager = new ReferenceManager();
+        fragmentManager = new FragmentManager();
+        try {
+            fragmentManager.ProcessFragments(dataManager.getBamFiles(),referenceManager,
+                    panelManager,FLANK);
+        } catch (Exception ex) {
+            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    @Override public void start(Stage stage) {
+    public void Render(Stage stage){
         Group root = new Group();
         
-        //testPanel.RenderPanel(root,referenceManager.getReference(),MAXREADCOUNT);
-        //testPanel2.RenderPanel(root, referenceManager.getReference(), MAXREADCOUNT);
+        panelManager.RenderPanels(root,referenceManager.ReferenceData,
+                fragmentManager.getMaxReadCount());
         
         root.getChildren().add(SetupChartTitle((int) (WIDTH/2), 50));
         
@@ -82,4 +103,20 @@ public class Engine extends Application {
 
         return details;
     }   
+    
+    private static File SetPrefsFile(){
+	// Ensure the .scri-bioinf folder exists
+	File fldr = new File("C:\\Users\\ranasi01\\Documents\\Project\\gv15", ".scri-bioinf");
+	fldr.mkdirs();  
+
+	// Cached reference file
+	ConsensusFileCache.setIndexFile(new File(fldr, "tablet-refs.xml"));
+        // This is the file we really want
+        File file = new File(fldr, "tablet.xml");
+        // So if it exists, just use it
+        if (file.exists())
+            return file;   
+        
+        return null;
+    }
 }
