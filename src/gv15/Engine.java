@@ -3,6 +3,9 @@ package gv15;
 import data.cache.ConsensusFileCache;
 import htsjdk.variant.variantcontext.Allele;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -38,16 +41,22 @@ public class Engine{
     VariantManager variantManager;
     FragmentManager fragmentManager;
     ReferenceManager referenceManager;
+    HashMap<String,ArrayList<Phenotype>> phenotypes = new HashMap();
        
     public Engine(){
         
         //Setup Import Utils
         dataManager = new DataManager(DataPath);
+        dataManager.ImportPhenotypes(phenotypes);
         SetPrefsFile();
         
         //Setup Panels
         panelManager = new PanelManager();
-        panelManager.AddPanel("Control", GridStartX, GridStartY, FLANK, ColumnWidth, RowHeight);
+        for(String type:phenotypes.keySet()){
+            panelManager.AddPanel(type, 
+                    GridStartX, GridStartY, FLANK, ColumnWidth, RowHeight);     
+            break;            
+        }
         
         //Setup Variants
         variantManager = new VariantManager(dataManager.ImportVCFFile());
