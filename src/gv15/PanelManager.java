@@ -6,6 +6,7 @@
 package gv15;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import javafx.scene.Group;
 
 /**
@@ -26,9 +27,20 @@ public class PanelManager {
                 columnWidth,rowHeight));      
     }
     
-    public void RenderPanels(Group root,ArrayList<String> referenceData,int maxReadcount){
+    public void RenderPanels(Group root,ReferenceManager referenceManager,int maxReadcount){
         for(Panel panel:enginePanels){
-            panel.RenderPanel(root,referenceData,maxReadcount);
+            //if(panel.PanelName.equals("CIN3"))
+                panel.RenderPanel(root,referenceManager.GetReferenceForType(panel.PanelName),
+                        maxReadcount);
         }    
+    }
+    
+    public Panel GetPanelFromPhenotype(String type){
+        for(Panel panel:enginePanels){
+            if(panel.PanelName.equals(type))
+                return panel;
+        }
+        
+        return null;
     }
 }

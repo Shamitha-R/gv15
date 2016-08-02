@@ -24,15 +24,15 @@ import javafx.stage.Stage;
 public class Engine{
     
     //Engine Settings
-    public double WIDTH = 1280, HEIGHT = 768;
+    public double WIDTH = 1280, HEIGHT = 950;
     public int FLANK = 7;
     public String DataPath = "C:\\Users\\ranasi01\\Documents\\Project\\Data";
 
     public float GridStartX = 150;
     public float GridStartY = 100;
-    public float PanelSeparation = 50;
+    public float PanelSeparation = 215;
     public int ColumnWidth = 65;
-    public int RowHeight = 20;
+    public int RowHeight = 18;
     public int FragmentXOffset = 20;     
     
     //Components
@@ -52,20 +52,21 @@ public class Engine{
         
         //Setup Panels
         panelManager = new PanelManager();
+        referenceManager = new ReferenceManager();
+        int count = 0;
         for(String type:phenotypes.keySet()){
             panelManager.AddPanel(type, 
-                    GridStartX, GridStartY, FLANK, ColumnWidth, RowHeight);     
-            break;            
+                    GridStartX, GridStartY + (PanelSeparation*count), FLANK, ColumnWidth, RowHeight);  
+            count++;
+            //break;
         }
         
         //Setup Variants
-        variantManager = new VariantManager(dataManager.ImportVCFFile());
-        
+        variantManager = new VariantManager(dataManager.ImportVCFFile());       
         //Setup Fragments
-        referenceManager = new ReferenceManager();
         fragmentManager = new FragmentManager();
         try {
-            fragmentManager.ProcessFragments(dataManager.getBamFiles(),referenceManager,
+            fragmentManager.ProcessFragments(phenotypes,referenceManager,
                     panelManager,FLANK);
         } catch (Exception ex) {
             Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
@@ -75,7 +76,7 @@ public class Engine{
     public void Render(Stage stage){
         Group root = new Group();
         
-        panelManager.RenderPanels(root,referenceManager.ReferenceData,
+        panelManager.RenderPanels(root,referenceManager,
                 fragmentManager.getMaxReadCount());
         
         root.getChildren().add(SetupChartTitle((int) (WIDTH/2), 50));

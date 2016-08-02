@@ -20,7 +20,7 @@ import javafx.scene.text.Text;
  * @author ranasi01
  */
 public class Panel {
-    public String PanelID;
+    public String PanelName;
     public Map<String,FragmentNode>[] Fragments;
     public double PositionX;
     public double PositionY;
@@ -33,7 +33,7 @@ public class Panel {
     
     public Panel(String ID,double positionX,double positionY,
         int columns,int rows,double columnWidth,double rowHeight){
-        this.PanelID = ID;
+        this.PanelName = ID;
         this.PositionX = positionX;
         this.PositionY = positionY;
         this.columns = columns;
@@ -215,6 +215,9 @@ public class Panel {
                                                         getInstance().RowNumberToBaseType(nextBase));
 
                                 for (Integer colVal : connectedColumns) {
+
+                                    if(!Fragments[colVal].containsKey(connectedVal))
+                                        System.err.println("");
                                     
                                     float nextReadSize = 1 + ((Fragments[colVal].get(connectedVal).ReadCount
                                         /(maxReadCount*1.0f))*13.0f);    

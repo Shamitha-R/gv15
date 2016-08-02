@@ -1,17 +1,20 @@
 package gv15;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  *
  * @author ranasi01
  */
 public class ReferenceManager {
-    public ArrayList<String> ReferenceData;
+
+    public HashMap<String,ArrayList<String>> ReferenceData;
     public int ShiftVal;
     
     public ReferenceManager(){
-        ReferenceData = new ArrayList();
+        ReferenceData = new HashMap();
     }
 
     public ArrayList<String> CombineReferences(ArrayList<String> ref00,ArrayList<String> ref01){
@@ -39,4 +42,24 @@ public class ReferenceManager {
         return combineRef;
     }
  
+    public void AddReference(String type,ArrayList<String> refData){
+        if(!ReferenceData.containsKey(type)){
+            ReferenceData.put(type, new ArrayList());
+            for(String val:refData)
+                ReferenceData.get(type).add(val);
+        }else{
+            ReferenceData.get(type).clear();
+            for(String val:refData)
+                ReferenceData.get(type).add(val);
+        }
+    }
+    
+    public ArrayList<String> GetReferenceForType(String targetType){
+        for(String type:ReferenceData.keySet()){
+            if(type.equals(targetType))
+                return ReferenceData.get(type);
+        }
+        
+        return null;
+    }
 }
