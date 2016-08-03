@@ -3,7 +3,10 @@ package gv15;
 import data.cache.ConsensusFileCache;
 import htsjdk.variant.variantcontext.Allele;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,12 +51,12 @@ public class Engine{
     ReferenceManager referenceManager;
     HashMap<String,ArrayList<Phenotype>> phenotypes = new HashMap();
        
-    public Engine(){
+    public Engine(String[] args){
         
         //Setup Import Utils
         dataManager = new DataManager(DataPath);
         dataManager.ImportPhenotypes(phenotypes);
-        SetPrefsFile();
+        SetPrefsFile(args);
         
         //Setup Panels
         panelManager = new PanelManager();
@@ -72,7 +75,7 @@ public class Engine{
         fragmentManager = new FragmentManager();
         try {
             fragmentManager.ProcessFragments(phenotypes,referenceManager,
-                    panelManager,FLANK);
+                    panelManager,FLANK,variantManager.getSelectedVariant());
         } catch (Exception ex) {
             Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -133,9 +136,23 @@ public class Engine{
         return details;
     }   
     
-    private static File SetPrefsFile(){
+    private static File SetPrefsFile(String[] args){
+
+        String filePath = args[0].substring(7);
+        
+        //Read Engine Preferences
+	try (BufferedReader br = new BufferedReader(new FileReader(filePath+"\\prefs.txt")))
+	{
+            String sCurrentLine;
+            while ((sCurrentLine = br.readLine()) != null) {
+                System.out.println(sCurrentLine);
+            }
+	} catch (IOException e) {
+            e.printStackTrace();
+	} 
+               
 	// Ensure the .scri-bioinf folder exists
-	File fldr = new File("C:\\Users\\ranasi01\\Documents\\Project\\gv15", ".scri-bioinf");
+	File fldr = new File(filePath, ".scri-bioinf");
 	fldr.mkdirs();  
 
 	// Cached reference file

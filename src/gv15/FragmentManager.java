@@ -12,7 +12,7 @@ import data.auxiliary.CigarEvent;
 import data.auxiliary.CigarFeature;
 import data.auxiliary.CigarInsertEvent;
 import data.auxiliary.Feature;
-import static gv15.Gv15.VariancePos;
+import htsjdk.variant.variantcontext.VariantContext;
 import io.AssemblyFile;
 import io.AssemblyFileHandler;
 import io.TabletFile;
@@ -38,7 +38,7 @@ public class FragmentManager {
     }
     
     public void ProcessFragments(HashMap<String,ArrayList<Phenotype>> phenotypes,ReferenceManager referenceManager,
-            PanelManager panelManager,int flank) throws Exception{
+            PanelManager panelManager,int flank,VariantContext currentVariant) throws Exception{
         
         boolean combine = false;
         for(String type:phenotypes.keySet()){
@@ -84,8 +84,8 @@ public class FragmentManager {
                 Contig selectedCotig = assembly.getContig(0);
 
                 //TODO
-                int startCoord = VariancePos - flank;
-                int endCoord  = VariancePos + flank;
+                int startCoord = currentVariant.getStart() - flank;
+                int endCoord  = currentVariant.getStart() + flank;
 
                 if(assembly.getBamBam() != null){
                     //Set Location
@@ -123,8 +123,8 @@ public class FragmentManager {
                 for(int i= 0;i<selectedCotig.getFeatures().size();i++){
                     Feature currentFeature = selectedCotig.getFeatures().get(i);
 
-                    boolean filter = (currentFeature.getDataPS() > VariancePos - 3
-                            && currentFeature.getDataPS() < VariancePos);
+                    boolean filter = (currentFeature.getDataPS() > currentVariant.getStart() - 3
+                            && currentFeature.getDataPS() < currentVariant.getStart());
 
                     if(currentFeature.getGFFType().equals("CIGAR-I") &&
                             currentFeature.getDataPS() >= startCoord-2 && 

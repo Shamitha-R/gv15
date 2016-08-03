@@ -1,6 +1,5 @@
 package gv15;
 
-import static gv15.Gv15.Flank;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,6 +24,7 @@ public class Panel {
     public double PositionX;
     public double PositionY;
     public int FragmentXOffset = 20;
+    public int Flank;
     
     private int columns;
     private int rows;
@@ -32,7 +32,7 @@ public class Panel {
     private double rowHeight;
     
     public Panel(String ID,double positionX,double positionY,
-        int columns,int rows,double columnWidth,double rowHeight){
+        int columns,int rows,double columnWidth,double rowHeight,int flank){
         this.PanelName = ID;
         this.PositionX = positionX;
         this.PositionY = positionY;
@@ -40,6 +40,7 @@ public class Panel {
         this.rows = rows;
         this.columnWidth = columnWidth;
         this.rowHeight = rowHeight;
+        this.Flank = flank;
     }
     
     public Map<String,FragmentNode>[] getFragments(){

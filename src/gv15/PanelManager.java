@@ -24,7 +24,7 @@ public class PanelManager {
     public void AddPanel(String panelName,double startX,double startY,int flank,
             double columnWidth,double rowHeight){
         enginePanels.add(new Panel(panelName, startX, startY,(flank*2)+1,5,
-                columnWidth,rowHeight));      
+                columnWidth,rowHeight,flank));      
     }
     
     public void RenderPanels(Group root,ReferenceManager referenceManager,int maxReadcount){

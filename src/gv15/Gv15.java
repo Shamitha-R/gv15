@@ -14,23 +14,16 @@ import java.util.ArrayList;
  * @author ranasi01
  */
 public class Gv15  extends Application {
-    
-   
-    static int Flank = 7;
-    static int ShiftVal = 0;
-    static int VariancePos = 871334;
-
-    private static ArrayList<Phenotype> Phenotypes = new ArrayList();
 
     static Engine engine;
     public static void main(String[] args) throws Exception {
-        engine = new Engine(); 
+        engine = new Engine(args); 
         
         launch(args);
     }
     
     @Override public void start(Stage stage) {
-        engine.Render(stage);
+        //engine.Render(stage);
     }
 
 }

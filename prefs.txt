@@ -1,0 +1,10 @@
+DataPath = "C:\\Users\\ranasi01\\Documents\\Project\\Data"
+WIDTH = 1280
+HEIGHT = 950
+FLANK = 7
+GridStartX = 150
+GridStartY = 100
+PanelSeparation = 215
+ColumnWidth = 65
+RowHeight = 18
+FragmentXOffset = 20  
