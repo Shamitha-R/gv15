@@ -43,7 +43,6 @@ public class FragmentManager {
     public void ProcessFragments(HashMap<String,ArrayList<Phenotype>> phenotypes,ReferenceManager referenceManager,
             PanelManager panelManager,int flank,VariantContext currentVariant) throws Exception{
         
-        boolean combine = false;
         for(String type:phenotypes.keySet()){
             if(type.equals("Neg_Control")){
             ArrayList<ArrayList<String>> ReferenceDataCollection = new ArrayList();
