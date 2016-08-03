@@ -128,6 +128,7 @@ public class Engine{
             for(byte base:curAllele.getBases()){
                 displayText+=Character.toString ((char) base);
             }
+            System.out.println("");
             displayText+=">";
         }
 
