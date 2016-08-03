@@ -50,7 +50,7 @@ public class Panel {
     public void RenderPanel(Group renderGroup,ArrayList<String> refereneceData,
             int maxReadCount,int offset){
         ArrayList<Shape> renderVariance = SetupVariance(PositionX,PositionY, 
-                Flank+offset,65, 20);
+                Flank+offset,columnWidth, rowHeight);
         ArrayList<Shape> renderArea = SetupRenderArea((rows*2)+1, columns, columnWidth, 
                 rowHeight, PositionX, PositionY);        
         ArrayList<Shape> referenceRender = SetupReferenceRender(refereneceData,
@@ -65,7 +65,7 @@ public class Panel {
     }
     
     private ArrayList<Shape> SetupVariance(double gridX, double gridY, int varianceCol,
-            float colWidth,float rowHeight){
+            double colWidth,double rowHeight){
         ArrayList<Shape> renderItems = new ArrayList();
         
         Line tempLine = new Line();

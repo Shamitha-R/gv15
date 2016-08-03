@@ -2,7 +2,9 @@ package gv15;
 
 import data.cache.ConsensusFileCache;
 import htsjdk.variant.variantcontext.Allele;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -23,7 +25,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.FileImageOutputStream;
 
 /**
  *
@@ -40,6 +46,7 @@ public class Engine{
     public String ReferencePath;
     public String VariantPath;
     public String PhenotypePath;
+    public String OutputType;
 
     public double GridStartX;
     public double GridStartY;
@@ -105,19 +112,36 @@ public class Engine{
         stage.setResizable(false);
         stage.show();
         
-//        SnapshotParameters param = new SnapshotParameters();
-//        param.setDepthBuffer(true);
-//        param.setFill(Color.CORNSILK);
-//        WritableImage image = scene.snapshot(null);
-//        
-//        BufferedImage tempImg = SwingFXUtils.fromFXImage(image, null);
-//
-//        File outputfile = new File(OutputPath+"tempImg.png");
-//        try{
-//            ImageIO.write(tempImg, "png", outputfile);
-//        }catch(Exception e){
-//            
-//        }
+        WritableImage snapshot = scene.snapshot(null);
+        if(OutputType.equals("png")){
+            BufferedImage tempImg = SwingFXUtils.fromFXImage(snapshot, null);
+            File outputfile = new File(OutputPath+"results.png");
+            try{
+                ImageIO.write(tempImg, "png", outputfile);
+            }catch(Exception e){
+
+            }
+        }else if(OutputType.equals("jpeg")){
+           File fa = new File(OutputPath+"results.jpg");
+           RenderedImage renderedImage = SwingFXUtils.fromFXImage(snapshot, null);
+           BufferedImage image2 = new BufferedImage((int)WIDTH, (int)HEIGHT, BufferedImage.TYPE_INT_RGB); 
+           image2.setData(renderedImage.getData());
+           try{
+               ImageWriter writer = (ImageWriter)ImageIO.getImageWritersByFormatName("jpeg").next();
+               ImageWriteParam iwp = writer.getDefaultWriteParam();
+               iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+               iwp.setCompressionQuality(1);   // a float between 0 and 1
+               // 1 specifies minimum compression and maximum quality
+               FileImageOutputStream output = new FileImageOutputStream(fa);
+               writer.setOutput(output);
+               IIOImage iioimage = new IIOImage(image2, null, null);
+               writer.write(null, iioimage, iwp);
+               writer.dispose();
+
+           }catch (Exception e){
+
+           }     
+        }
         //stage.setMaximized(true);        
     }
     
@@ -186,6 +210,8 @@ public class Engine{
                     case "rowheight": RowHeight = Integer.parseInt(parameterVal);
                         break;
                     case "fragmentxoffset": FragmentXOffset = Integer.parseInt(parameterVal);
+                        break;
+                    case "outputtype": OutputType = parameterVal;
                         break;
                     default: System.err.println("Undeclared Parameter "+parameterName);
                 }
