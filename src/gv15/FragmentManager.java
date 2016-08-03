@@ -32,9 +32,12 @@ import java.util.Map;
 public class FragmentManager {
     
     private int maxReadCount;
+    private String dataPath;
+    private String cachePath;
     
-    public FragmentManager(){
-        
+    public FragmentManager(String dataPath,String cachePath){
+        this.dataPath = dataPath;
+        this.cachePath = cachePath;
     }
     
     public void ProcessFragments(HashMap<String,ArrayList<Phenotype>> phenotypes,ReferenceManager referenceManager,
@@ -42,7 +45,7 @@ public class FragmentManager {
         
         boolean combine = false;
         for(String type:phenotypes.keySet()){
-            //if(type.equals("Neg_Control")){
+            if(type.equals("Neg_Control")){
             ArrayList<ArrayList<String>> ReferenceDataCollection = new ArrayList();
             ArrayList<Map<String,FragmentNode>[]> FragmentsCollection = new ArrayList();
 
@@ -59,15 +62,15 @@ public class FragmentManager {
                 }
 
                 String[] filenames  = new String[]{
-                    "C:\\Users\\ranasi01\\Documents\\Project\\Data\\" + phenotypes.get(type).get(sampleNo).FileName,
-                    "C:\\Users\\ranasi01\\Documents\\Project\\Data\\ref.fasta"
+                    dataPath + "\\" + phenotypes.get(type).get(sampleNo).FileName,
+                    referenceManager.getReferencePath()
                 };
 
                 TabletFile tabletFile;
                 tabletFile = TabletFileHandler.createFromFileList(filenames);
 
                 AssemblyFile[] files = tabletFile.getFileList();
-                File cacheDir = new File("D:\\");
+                File cacheDir = new File(cachePath);
 
                 AssemblyFileHandler assemblyFileHandler = new 
                     AssemblyFileHandler(files, cacheDir);
@@ -422,7 +425,7 @@ public class FragmentManager {
                 adjustedPos++;
             }
             referenceManager.ShiftVals.put(type, addedVal);
-            //}//Type Check
+            }//Type Check
 
         }//End phenoype
     }

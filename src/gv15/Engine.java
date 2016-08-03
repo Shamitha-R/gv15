@@ -32,16 +32,19 @@ import javax.imageio.ImageIO;
 public class Engine{
     
     //Engine Settings
-    public double WIDTH = 1280, HEIGHT = 950;
-    public int FLANK = 7;
-    public String DataPath = "C:\\Users\\ranasi01\\Documents\\Project\\Data";
+    public double WIDTH, HEIGHT;
+    public int FLANK;
+    public String DataPath;
+    public String CachePath;
+    public String OutputPath;
+    public String ReferencePath;
 
-    public float GridStartX = 150;
-    public float GridStartY = 100;
-    public float PanelSeparation = 215;
-    public int ColumnWidth = 65;
-    public int RowHeight = 18;
-    public int FragmentXOffset = 20;     
+    public double GridStartX;
+    public double GridStartY;
+    public double PanelSeparation;
+    public int ColumnWidth;
+    public int RowHeight;
+    public int FragmentXOffset;     
     
     //Components
     DataManager dataManager;
@@ -53,14 +56,15 @@ public class Engine{
        
     public Engine(String[] args){
         
+        SetPrefsFile(args);
+        
         //Setup Import Utils
         dataManager = new DataManager(DataPath);
         dataManager.ImportPhenotypes(phenotypes);
-        SetPrefsFile(args);
         
         //Setup Panels
         panelManager = new PanelManager();
-        referenceManager = new ReferenceManager();
+        referenceManager = new ReferenceManager(ReferencePath);
         int count = 0;
         for(String type:phenotypes.keySet()){
             panelManager.AddPanel(type, 
@@ -72,7 +76,7 @@ public class Engine{
         //Setup Variants
         variantManager = new VariantManager(dataManager.ImportVCFFile());       
         //Setup Fragments
-        fragmentManager = new FragmentManager();
+        fragmentManager = new FragmentManager(DataPath,CachePath);
         try {
             fragmentManager.ProcessFragments(phenotypes,referenceManager,
                     panelManager,FLANK,variantManager.getSelectedVariant());
@@ -106,7 +110,7 @@ public class Engine{
         
         BufferedImage tempImg = SwingFXUtils.fromFXImage(image, null);
 
-        File outputfile = new File("d:/tempImg.png");
+        File outputfile = new File(OutputPath+"tempImg.png");
         try{
             ImageIO.write(tempImg, "png", outputfile);
         }catch(Exception e){
@@ -128,7 +132,6 @@ public class Engine{
             for(byte base:curAllele.getBases()){
                 displayText+=Character.toString ((char) base);
             }
-            System.out.println("");
             displayText+=">";
         }
 
@@ -137,7 +140,7 @@ public class Engine{
         return details;
     }   
     
-    private static File SetPrefsFile(String[] args){
+    private File SetPrefsFile(String[] args){
 
         String filePath = args[0].substring(7);
         
@@ -146,8 +149,42 @@ public class Engine{
 	{
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
-                System.out.println(sCurrentLine);
+                String parameterName = sCurrentLine.substring(0, sCurrentLine.indexOf("="));
+                String parameterVal = sCurrentLine.substring(sCurrentLine.indexOf("=")+1);
+                parameterVal = parameterVal.trim();
+                
+                //Setting the parameters as specified in the prefs file 
+                switch(parameterName){
+                    case "datapath": DataPath = parameterVal;
+                        break;
+                    case "cachepath": CachePath = parameterVal;
+                        break;
+                    case "outputpath": OutputPath = parameterVal;
+                        break;         
+                    case "referencepath": ReferencePath = parameterVal;
+                        break;
+                    case "width": WIDTH = Double.parseDouble(parameterVal);
+                        break;
+                    case "height": HEIGHT = Double.parseDouble(parameterVal);
+                        break; 
+                    case "flank": FLANK = Integer.parseInt(parameterVal);
+                        break; 
+                    case "gridstartx": GridStartX = Double.parseDouble(parameterVal);
+                        break;
+                    case "gridstarty": GridStartY = Double.parseDouble(parameterVal);
+                        break;
+                    case "panelseparation": PanelSeparation = Double.parseDouble(parameterVal);
+                        break;
+                    case "columnwidth": ColumnWidth = Integer.parseInt(parameterVal);
+                        break;
+                    case "rowheight": RowHeight = Integer.parseInt(parameterVal);
+                        break;
+                    case "fragmentxoffset": FragmentXOffset = Integer.parseInt(parameterVal);
+                        break;
+                    default: System.err.println("Undeclared Parameter "+parameterName);
+                }
             }
+
 	} catch (IOException e) {
             e.printStackTrace();
 	} 

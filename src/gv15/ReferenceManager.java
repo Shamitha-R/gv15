@@ -13,9 +13,12 @@ public class ReferenceManager {
     public HashMap<String,ArrayList<String>> ReferenceData;
     public HashMap<String,Integer> ShiftVals;
     
-    public ReferenceManager(){
+    private String referencePath;
+    
+    public ReferenceManager(String referencePath){
         ReferenceData = new HashMap();
         ShiftVals = new HashMap();
+        this.referencePath = referencePath;
     }
 
     public ArrayList<String> CombineReferences(ArrayList<String> ref00,ArrayList<String> ref01){
@@ -62,5 +65,9 @@ public class ReferenceManager {
         }
         
         return null;
+    }
+    
+    public String getReferencePath(){
+        return referencePath;
     }
 }
