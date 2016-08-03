@@ -45,7 +45,7 @@ public class FragmentManager {
         
         boolean combine = false;
         for(String type:phenotypes.keySet()){
-            //if(type.equals("Neg_Control")){
+            if(type.equals("Neg_Control")){
             ArrayList<ArrayList<String>> ReferenceDataCollection = new ArrayList();
             ArrayList<Map<String,FragmentNode>[]> FragmentsCollection = new ArrayList();
 
@@ -425,7 +425,7 @@ public class FragmentManager {
                 adjustedPos++;
             }
             referenceManager.ShiftVals.put(type, addedVal);
-            //}//Type Check
+            }//Type Check
 
         }//End phenoype
     }
