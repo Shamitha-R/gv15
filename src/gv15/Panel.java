@@ -47,9 +47,9 @@ public class Panel {
     }
     
     public void RenderPanel(Group renderGroup,ArrayList<String> refereneceData,
-            int maxReadCount){
+            int maxReadCount,int offset){
         ArrayList<Shape> renderVariance = SetupVariance(PositionX,PositionY, 
-                Flank+0,65, 20);
+                Flank+offset,65, 20);
         ArrayList<Shape> renderArea = SetupRenderArea((rows*2)+1, columns, columnWidth, 
                 rowHeight, PositionX, PositionY);        
         ArrayList<Shape> referenceRender = SetupReferenceRender(refereneceData,

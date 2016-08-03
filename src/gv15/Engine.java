@@ -2,6 +2,7 @@ package gv15;
 
 import data.cache.ConsensusFileCache;
 import htsjdk.variant.variantcontext.Allele;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,13 +10,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -90,6 +95,20 @@ public class Engine{
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+        
+        SnapshotParameters param = new SnapshotParameters();
+        param.setDepthBuffer(true);
+        param.setFill(Color.CORNSILK);
+        WritableImage image = scene.snapshot(null);
+        
+        BufferedImage tempImg = SwingFXUtils.fromFXImage(image, null);
+
+        File outputfile = new File("d:/tempImg.png");
+        try{
+            ImageIO.write(tempImg, "png", outputfile);
+        }catch(Exception e){
+            
+        }
         //stage.setMaximized(true);        
     }
     

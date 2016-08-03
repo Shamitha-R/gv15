@@ -42,7 +42,7 @@ public class FragmentManager {
         
         boolean combine = false;
         for(String type:phenotypes.keySet()){
-            //if(type.equals("CIN3")){
+            //if(type.equals("Neg_Control")){
             ArrayList<ArrayList<String>> ReferenceDataCollection = new ArrayList();
             ArrayList<Map<String,FragmentNode>[]> FragmentsCollection = new ArrayList();
 
@@ -132,9 +132,7 @@ public class FragmentManager {
                             filter){
                         insertFeatures.add(currentFeature);
 
-                        if(currentFeature.getDataPS() > VariancePos - 3
-                                && currentFeature.getDataPS() < VariancePos - 1)
-                            referenceManager.ShiftVal++;
+
 
                         //Add the inserted value to the Reference data
                         //and shift the Referecne values
@@ -155,6 +153,12 @@ public class FragmentManager {
                         }
 
                         insertCount+=maxInsertions;
+                        
+//                        if(currentFeature.getDataPS() > VariancePos - 3
+//                                && currentFeature.getDataPS() < VariancePos - 1){
+//                            referenceManager.ShiftVal++;
+//                            if(in)
+//                        }
                     }    
                 }
 
@@ -406,8 +410,21 @@ public class FragmentManager {
                 System.err.println("");
             }//End aggregating samples
             
+            //Adjust for insertions
+            int adjustedPos = 0;
+            int addedVal = 0;
+            for(int i = 0;i<flank+1;i++){
+                while(referenceManager.ReferenceData.get(type).get(adjustedPos).
+                        equals("INS")){
+                    addedVal++; 
+                    adjustedPos++;   
+                }
+                adjustedPos++;
+            }
+            referenceManager.ShiftVals.put(type, addedVal);
             //}//Type Check
-        }
+
+        }//End phenoype
     }
     public void Adjust2(ArrayList<String> newRef,
             Map<String,FragmentNode>[] fragments,ArrayList<String> combinedRef){
@@ -496,8 +513,6 @@ public class FragmentManager {
                 newRefIndex++;
             }
         }
-        
-        System.err.println("");
     }
       
     public boolean ReadArrayContainsInsert(Read targetRead,Read[] readArr){

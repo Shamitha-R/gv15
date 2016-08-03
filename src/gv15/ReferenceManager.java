@@ -11,10 +11,11 @@ import java.util.HashMap;
 public class ReferenceManager {
 
     public HashMap<String,ArrayList<String>> ReferenceData;
-    public int ShiftVal;
+    public HashMap<String,Integer> ShiftVals;
     
     public ReferenceManager(){
         ReferenceData = new HashMap();
+        ShiftVals = new HashMap();
     }
 
     public ArrayList<String> CombineReferences(ArrayList<String> ref00,ArrayList<String> ref01){
