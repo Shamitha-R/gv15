@@ -38,6 +38,8 @@ public class Engine{
     public String CachePath;
     public String OutputPath;
     public String ReferencePath;
+    public String VariantPath;
+    public String PhenotypePath;
 
     public double GridStartX;
     public double GridStartY;
@@ -59,7 +61,7 @@ public class Engine{
         SetPrefsFile(args);
         
         //Setup Import Utils
-        dataManager = new DataManager(DataPath);
+        dataManager = new DataManager(DataPath,VariantPath,PhenotypePath);
         dataManager.ImportPhenotypes(phenotypes);
         
         //Setup Panels
@@ -103,19 +105,19 @@ public class Engine{
         stage.setResizable(false);
         stage.show();
         
-        SnapshotParameters param = new SnapshotParameters();
-        param.setDepthBuffer(true);
-        param.setFill(Color.CORNSILK);
-        WritableImage image = scene.snapshot(null);
-        
-        BufferedImage tempImg = SwingFXUtils.fromFXImage(image, null);
-
-        File outputfile = new File(OutputPath+"tempImg.png");
-        try{
-            ImageIO.write(tempImg, "png", outputfile);
-        }catch(Exception e){
-            
-        }
+//        SnapshotParameters param = new SnapshotParameters();
+//        param.setDepthBuffer(true);
+//        param.setFill(Color.CORNSILK);
+//        WritableImage image = scene.snapshot(null);
+//        
+//        BufferedImage tempImg = SwingFXUtils.fromFXImage(image, null);
+//
+//        File outputfile = new File(OutputPath+"tempImg.png");
+//        try{
+//            ImageIO.write(tempImg, "png", outputfile);
+//        }catch(Exception e){
+//            
+//        }
         //stage.setMaximized(true);        
     }
     
@@ -162,6 +164,10 @@ public class Engine{
                     case "outputpath": OutputPath = parameterVal;
                         break;         
                     case "referencepath": ReferencePath = parameterVal;
+                        break;
+                    case "variantpath": VariantPath = parameterVal;
+                        break;     
+                    case "phenotypepath": PhenotypePath = parameterVal;
                         break;
                     case "width": WIDTH = Double.parseDouble(parameterVal);
                         break;

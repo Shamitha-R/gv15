@@ -23,7 +23,7 @@ public class Gv15  extends Application {
     }
     
     @Override public void start(Stage stage) {
-        //engine.Render(stage);
+        engine.Render(stage);
     }
 
 }

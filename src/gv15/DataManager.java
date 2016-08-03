@@ -18,14 +18,18 @@ import java.util.logging.Logger;
 public class DataManager {
     
     private String filePath;
+    private String variantPath;
+    private String phenotypePath;
     private String[] bamFiles;
 
-    public DataManager(String filePath){
+    public DataManager(String filePath,String variantPath,String phenotypePath){
         this.filePath = filePath;
+        this.variantPath = variantPath;
+        this.phenotypePath = phenotypePath;
     }
     
     public File ImportVCFFile(){
-        return new File(filePath+"\\variants.vcf");
+        return new File(variantPath);
     }
     
     public String[] getBamFiles(){
@@ -46,7 +50,7 @@ public class DataManager {
     public void ImportPhenotypes(HashMap<String,ArrayList<Phenotype>> phenotypes) {
         CSVReader reader = null;
         try {
-            reader = new CSVReader(new FileReader(filePath+"\\phenotype_871234_871434.csv"));
+            reader = new CSVReader(new FileReader(phenotypePath));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
         }

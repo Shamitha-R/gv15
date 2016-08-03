@@ -1,5 +1,7 @@
 datapath=C:\Users\ranasi01\Documents\Project\Data
 referencepath=C:\Users\ranasi01\Documents\Project\Data\ref.fasta
+variantpath=C:\Users\ranasi01\Documents\Project\Data\variants.vcf
+phenotypepath=C:\Users\ranasi01\Documents\Project\Data\phenotype_871234_871434.csv
 cachepath=D:\
 outputpath=D:\
 width=1280
