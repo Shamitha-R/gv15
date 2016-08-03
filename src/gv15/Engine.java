@@ -112,6 +112,11 @@ public class Engine{
         stage.setResizable(false);
         stage.show();
         
+        OutputResultsToImage(scene);
+        //stage.setMaximized(true);        
+    }
+    
+    private void OutputResultsToImage(Scene scene){
         WritableImage snapshot = scene.snapshot(null);
         if(OutputType.equals("png")){
             BufferedImage tempImg = SwingFXUtils.fromFXImage(snapshot, null);
@@ -141,8 +146,7 @@ public class Engine{
            }catch (Exception e){
 
            }     
-        }
-        //stage.setMaximized(true);        
+        }        
     }
     
     private Text SetupChartTitle(int startX,int startY){
