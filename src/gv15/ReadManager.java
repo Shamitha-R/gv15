@@ -15,19 +15,19 @@ import java.util.logging.Logger;
 public class ReadManager {
     
     private HashMap<String,ArrayList<Read>> readCollection;
-    private TabletDataHandler tabletDataHandler;
-    private String referencePath;
     private String dataPath;
+    
+    public TabletDataHandler tabletDataHandler;
     
     public ReadManager(String referencePath,String dataPath,String cachePath){
         readCollection = new HashMap();
         tabletDataHandler = new TabletDataHandler(cachePath);
-        this.referencePath = referencePath;
+
         this.dataPath = dataPath;
     }
     
     public void LoadDataFromSamples(HashMap<String,ArrayList<Phenotype>> phenotypes,
-            int startCoordinate,int endCoordinate){
+            int startCoordinate,int endCoordinate,ReferenceManager referenceManager){
         for(String type:phenotypes.keySet()){
             if(type.equals("Neg_Control")){
             int sampleNo = 0;
@@ -36,12 +36,13 @@ public class ReadManager {
                 //Sample and reference data input for Tablet
                 String[] fileNames  = new String[]{
                     dataPath + "\\" + currentPhenotype.FileName,
-                    referencePath
+                    referenceManager.getReferencePath()
                 };
                 
                 //Call the Tablet library to load the sample data
                 try {
-                    tabletDataHandler.ExtractDataAtCoordinates(fileNames, startCoordinate, endCoordinate, 0);
+                    tabletDataHandler.ExtractDataAtCoordinates(fileNames, startCoordinate, endCoordinate, 
+                            0,currentPhenotype.FileName);
                 } catch (Exception ex) {
                     Logger.getLogger(ReadManager.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -87,10 +88,13 @@ public class ReadManager {
 
                 sampleNo++;
             }
+            //TODO: Read reference only once without reloading when reading 
+            //different samples
+            referenceManager.AddReference(type, tabletDataHandler.getLoadedReference());
         }//End type checking
         }
         
-        System.err.println("");
+
     }
     
     public ArrayList<Read> GetReadsForSample(String sampleName){

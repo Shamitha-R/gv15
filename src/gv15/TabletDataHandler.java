@@ -5,6 +5,7 @@ import data.Assembly;
 import data.Consensus;
 import data.Contig;
 import data.IReadManager;
+import data.auxiliary.Feature;
 import io.AssemblyFile;
 import io.AssemblyFileHandler;
 import io.TabletFile;
@@ -12,6 +13,7 @@ import io.TabletFileHandler;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  *
@@ -22,13 +24,15 @@ public class TabletDataHandler {
     private String cachePath;
     private ArrayList<String> loadedReference;
     private IReadManager reads;
+    private HashMap<String,ArrayList<Feature>> loadedFeatures;
 
     public TabletDataHandler(String cachePath){
         this.cachePath = cachePath;
+        loadedFeatures = new HashMap();
     }
     
     public void ExtractDataAtCoordinates(String[] fileNames,int startCoordinate,
-            int endCoordinate,int contigNumber) throws Exception{
+            int endCoordinate,int contigNumber,String sampleName) throws Exception{
         
         TabletFile tabletFile;
         tabletFile = TabletFileHandler.createFromFileList(fileNames);
@@ -75,6 +79,8 @@ public class TabletDataHandler {
         
         //Packing Reads                    
         reads = selectedCotig.getPackManager();
+        
+        loadedFeatures.put(sampleName, selectedCotig.getFeatures());
     }
     
     public IReadManager getReads(){
@@ -83,5 +89,9 @@ public class TabletDataHandler {
     
     public ArrayList<String> getLoadedReference(){
         return loadedReference;
+    }
+    
+    public HashMap<String,ArrayList<Feature>> getLoadedFeatures(){
+        return loadedFeatures;
     }
 }
