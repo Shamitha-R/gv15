@@ -67,7 +67,7 @@ public class Engine{
     public int FragmentXOffset;  
     
     //Debug Commands
-    boolean TESTINGPANELS = true;
+    boolean TESTINGPANELS = false;
     
     //Components
     DataManager dataManager;
@@ -113,7 +113,8 @@ public class Engine{
 
     public void Render(Stage stage){
         
-        CreateTestPanel();
+        if(TESTINGPANELS)
+            CreateTestPanel();
         
         Group root = new Group();
         

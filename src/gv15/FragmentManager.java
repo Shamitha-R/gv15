@@ -34,6 +34,7 @@ public class FragmentManager {
     public int maxReadCount;
     private String dataPath;
     private String cachePath;
+    private ReadManager readManager;
     
     public FragmentManager(String dataPath,String cachePath){
         this.dataPath = dataPath;
@@ -42,6 +43,14 @@ public class FragmentManager {
     
     public void ProcessFragments(HashMap<String,ArrayList<Phenotype>> phenotypes,ReferenceManager referenceManager,
             PanelManager panelManager,int flank,VariantContext currentVariant) throws Exception{
+        
+        int startCoord = currentVariant.getStart() - flank;
+        int endCoord  = currentVariant.getStart() + flank;
+        
+        //Load the Read data for all Samples
+        readManager = new ReadManager(referenceManager.getReferencePath(),
+                dataPath,cachePath);
+        readManager.LoadDataFromSamples(phenotypes, startCoord, endCoord);
         
         for(String type:phenotypes.keySet()){
             if(type.equals("Neg_Control")){
@@ -84,10 +93,6 @@ public class FragmentManager {
 
                 //Loading data from contigs
                 Contig selectedCotig = assembly.getContig(0);
-
-                //TODO
-                int startCoord = currentVariant.getStart() - flank;
-                int endCoord  = currentVariant.getStart() + flank;
 
                 if(assembly.getBamBam() != null){
                     //Set Location
@@ -134,8 +139,6 @@ public class FragmentManager {
                             filter){
                         insertFeatures.add(currentFeature);
 
-
-
                         //Add the inserted value to the Reference data
                         //and shift the Referecne values
                         int maxInsertions = -1;
@@ -154,20 +157,10 @@ public class FragmentManager {
                             tempReference.add(insertStartPos+insNum+insertCount, "INS");
                         }
 
-                        insertCount+=maxInsertions;
-                        
-//                        if(currentFeature.getDataPS() > VariancePos - 3
-//                                && currentFeature.getDataPS() < VariancePos - 1){
-//                            referenceManager.ShiftVal++;
-//                            if(in)
-//                        }
+                        insertCount+=maxInsertions;                
                     }    
                 }
 
-         
-                if(phenotypes.get(type).get(sampleNo).FileName.equals("samples\\chr1_871234_871434_DA0061616_IonXpress_001_rawlib.bam"))
-                       System.err.println("");
-                    
                 //Extract Reads
                 maxReadCount += reads.size();    
                 

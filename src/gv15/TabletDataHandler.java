@@ -5,7 +5,6 @@ import data.Assembly;
 import data.Consensus;
 import data.Contig;
 import data.IReadManager;
-import htsjdk.variant.variantcontext.VariantContext;
 import io.AssemblyFile;
 import io.AssemblyFileHandler;
 import io.TabletFile;
@@ -23,14 +22,13 @@ public class TabletDataHandler {
     private String cachePath;
     private ArrayList<String> loadedReference;
     private IReadManager reads;
-    
-    public TabletDataHandler(){
-        
+
+    public TabletDataHandler(String cachePath){
+        this.cachePath = cachePath;
     }
     
     public void ExtractDataAtCoordinates(String[] fileNames,int startCoordinate,
-            int endCoordinate, int flank,
-            int contigNumber,VariantContext currentVariant) throws Exception{
+            int endCoordinate,int contigNumber) throws Exception{
         
         TabletFile tabletFile;
         tabletFile = TabletFileHandler.createFromFileList(fileNames);
@@ -49,22 +47,18 @@ public class TabletDataHandler {
         
         //Loading data from contigs
         Contig selectedCotig = assembly.getContig(contigNumber);   
-        
-        int startCoord = currentVariant.getStart() - flank;
-        int endCoord  = currentVariant.getStart() + flank;
-        
-        if(assembly.getBamBam() != null){
-            //Set Location
-            assembly.getBamBam().setSize(endCoord-startCoord);
-            assembly.getBamBam().setBlockStart(selectedCotig, startCoord);
 
-            selectedCotig.clearCigarFeatures();
-            assembly.getBamBam().loadDataBlock(selectedCotig);           
-            assembly.getBamBam().indexNames();
-        }
-        //Extracting Referecne Data
+        //Set Location
+        assembly.getBamBam().setSize(endCoordinate-startCoordinate);
+        assembly.getBamBam().setBlockStart(selectedCotig, startCoordinate);
+
+        selectedCotig.clearCigarFeatures();
+        assembly.getBamBam().loadDataBlock(selectedCotig);           
+        assembly.getBamBam().indexNames();
+
+        //Extracting Reference Data
         Consensus consensus = selectedCotig.getConsensus();            
-        byte[] referenceData = consensus.getRange(startCoord-1, endCoord-1);
+        byte[] referenceData = consensus.getRange(startCoordinate-1, endCoordinate-1);
         loadedReference = new ArrayList();
         for(int i = 0;i<referenceData.length;i++){
             loadedReference.add(UtilityFunctions.getInstance().GetBaseFromVal(referenceData[i]));
@@ -83,11 +77,11 @@ public class TabletDataHandler {
         reads = selectedCotig.getPackManager();
     }
     
-    private IReadManager getReads(){
+    public IReadManager getReads(){
         return reads;
     }
     
-    private ArrayList<String> getLoadedReference(){
+    public ArrayList<String> getLoadedReference(){
         return loadedReference;
     }
 }
