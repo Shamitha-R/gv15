@@ -23,7 +23,7 @@ public class Panel {
     public Map<String,FragmentNode>[] Fragments;
     public double PositionX;
     public double PositionY;
-    public int FragmentXOffset = 20;
+    public int FragmentXOffset;
     public int Flank;
     
     private int columns;
@@ -32,7 +32,7 @@ public class Panel {
     private double rowHeight;
     
     public Panel(String ID,double positionX,double positionY,
-        int columns,int rows,double columnWidth,double rowHeight,int flank){
+        int columns,int rows,double columnWidth,double rowHeight,int flank,int xOffset){
         this.PanelName = ID;
         this.PositionX = positionX;
         this.PositionY = positionY;
@@ -41,6 +41,7 @@ public class Panel {
         this.columnWidth = columnWidth;
         this.rowHeight = rowHeight;
         this.Flank = flank;
+        this.FragmentXOffset = xOffset;
     }
     
     public Map<String,FragmentNode>[] getFragments(){
@@ -51,7 +52,7 @@ public class Panel {
             int maxReadCount,int offset){
         ArrayList<Shape> renderVariance = SetupVariance(PositionX,PositionY, 
                 Flank+offset,columnWidth, rowHeight);
-        ArrayList<Shape> renderArea = SetupRenderArea((rows*2)+1, columns, columnWidth, 
+        ArrayList<Shape> renderArea = SetupRenderArea((rows*2), columns, columnWidth, 
                 rowHeight, PositionX, PositionY);        
         ArrayList<Shape> referenceRender = SetupReferenceRender(refereneceData,
                 PositionX,PositionY,rowHeight,columnWidth);  
@@ -101,7 +102,7 @@ public class Panel {
             Line tempLine = new Line();
             tempLine.setStartX(startX + (rowHeight/2));
             tempLine.setStartY(startY + (row * rowHeight) + (rowHeight/2));
-            tempLine.setEndX(startX + (cols+1) * colWidth - (rowHeight/2));
+            tempLine.setEndX(startX + (cols) * colWidth - (rowHeight/2));
             tempLine.setEndY(startY + (row * rowHeight) + (rowHeight/2));
             tempLine.setStrokeWidth(rowHeight);
             
@@ -192,7 +193,7 @@ public class Panel {
                     tempLine.setEndY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
                     tempLine.setStrokeWidth(readSize);
                     
-                    if(referenceData.get(colNum)!="INS"){
+                    if(!referenceData.get(colNum).equals("INS")){
                         if(referenceData.get(colNum).equals(UtilityFunctions.
                             getInstance().RowNumberToBaseType(baseType)))
                             tempLine.setStroke(Color.GAINSBORO);
@@ -202,6 +203,12 @@ public class Panel {
                         tempLine.setStroke(Color.BLUEVIOLET);
                     
                     renderElements.add(tempLine); 
+                    
+                    //Add Read count render
+                    Text tempText = new Text((colNum * colWidth) + gridX + XOFFSET + (readSize/2) + FragmentXOffset - 5,
+                            (baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2) + 5,
+                            Integer.toString(val.ReadCount ));
+                    renderElements.add(tempText);                    
                     
                     //Connect the fragments
                     if(colNum < (cols)){
@@ -237,7 +244,7 @@ public class Panel {
                                             connectorLine.setStartY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
                                             connectorLine.setEndY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
                                         }
-                                        if(referenceData.get(colNum)=="INS"  || referenceData.get(colVal)=="INS")                                        
+                                        if(referenceData.get(colNum).equals("INS")  || referenceData.get(colVal).equals("INS"))                                        
                                             connectorLine.setStroke(Color.BLUEVIOLET);
                                         else{
                                             if(referenceData.get(colVal).equals(UtilityFunctions.
@@ -263,7 +270,7 @@ public class Panel {
                                             ((colVal) * colWidth) + gridX + XOFFSET,
                                             (nextBase * rowHeight * 2) + gridY + YOFFSET
                                         );
-                                        if(referenceData.get(colNum)=="INS" || referenceData.get(colVal)=="INS")
+                                        if(referenceData.get(colNum).equals("INS") || referenceData.get(colVal).equals("INS"))
                                             tempCurve.setStroke(Color.BLUEVIOLET);
                                         else{
                                             if(referenceData.get(colNum).equals(UtilityFunctions.

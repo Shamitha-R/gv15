@@ -22,14 +22,14 @@ public class PanelManager {
     }
     
     public void AddPanel(String panelName,double startX,double startY,int flank,
-            double columnWidth,double rowHeight){
+            double columnWidth,double rowHeight,int xOffset){
         enginePanels.add(new Panel(panelName, startX, startY,(flank*2)+1,5,
-                columnWidth,rowHeight,flank));      
+                columnWidth,rowHeight,flank,xOffset));      
     }
     
     public void RenderPanels(Group root,ReferenceManager referenceManager,int maxReadcount){
         for(Panel panel:enginePanels){
-            if(panel.PanelName.equals("Neg_Control"))
+            //if(panel.PanelName.equals("Neg_Control"))
                 panel.RenderPanel(root,referenceManager.GetReferenceForType(panel.PanelName),
                         maxReadcount,referenceManager.ShiftVals.get(panel.PanelName));
         }    
