@@ -76,8 +76,8 @@ public class Engine{
         referenceManager = new ReferenceManager(ReferencePath);
         int count = 0;
         for(String type:phenotypes.keySet()){
-            panelManager.AddPanel(type, 
-                    GridStartX, GridStartY + (PanelSeparation*count), FLANK, ColumnWidth, RowHeight);  
+            panelManager.AddPanel(type, GridStartX, GridStartY + (PanelSeparation*count), 
+                    FLANK, ColumnWidth, RowHeight,FragmentXOffset);  
             count++;
             //break;
         }

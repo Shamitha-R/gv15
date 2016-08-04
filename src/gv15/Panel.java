@@ -23,7 +23,7 @@ public class Panel {
     public Map<String,FragmentNode>[] Fragments;
     public double PositionX;
     public double PositionY;
-    public int FragmentXOffset = 20;
+    public int FragmentXOffset;
     public int Flank;
     
     private int columns;
@@ -32,7 +32,7 @@ public class Panel {
     private double rowHeight;
     
     public Panel(String ID,double positionX,double positionY,
-        int columns,int rows,double columnWidth,double rowHeight,int flank){
+        int columns,int rows,double columnWidth,double rowHeight,int flank,int xOffset){
         this.PanelName = ID;
         this.PositionX = positionX;
         this.PositionY = positionY;
@@ -41,6 +41,7 @@ public class Panel {
         this.columnWidth = columnWidth;
         this.rowHeight = rowHeight;
         this.Flank = flank;
+        this.FragmentXOffset = xOffset;
     }
     
     public Map<String,FragmentNode>[] getFragments(){
@@ -202,6 +203,12 @@ public class Panel {
                         tempLine.setStroke(Color.BLUEVIOLET);
                     
                     renderElements.add(tempLine); 
+                    
+                    //Add Read count render
+                    Text tempText = new Text((colNum * colWidth) + gridX + XOFFSET + (readSize/2) + FragmentXOffset - 5,
+                            (baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2) + 5,
+                            Integer.toString(val.ReadCount ));
+                    renderElements.add(tempText); 
                     
                     //Connect the fragments
                     if(colNum < (cols)){
