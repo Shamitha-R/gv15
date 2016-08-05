@@ -1,5 +1,6 @@
 package gv15;
 
+import com.opencsv.CSVReader;
 import data.cache.ConsensusFileCache;
 import htsjdk.variant.variantcontext.Allele;
 import java.awt.Image;
@@ -7,11 +8,16 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -30,6 +36,11 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -53,7 +64,10 @@ public class Engine{
     public double PanelSeparation;
     public int ColumnWidth;
     public int RowHeight;
-    public int FragmentXOffset;     
+    public int FragmentXOffset;  
+    
+    //Debug Commands
+    boolean TESTINGPANELS = true;
     
     //Components
     DataManager dataManager;
@@ -61,46 +75,54 @@ public class Engine{
     VariantManager variantManager;
     FragmentManager fragmentManager;
     ReferenceManager referenceManager;
+    //TabletDataHandler tabletDataHandler;
     HashMap<String,ArrayList<Phenotype>> phenotypes = new HashMap();
        
     public Engine(String[] args){
-        
-        SetPrefsFile(args);
-        
-        //Setup Import Utils
-        dataManager = new DataManager(DataPath,VariantPath,PhenotypePath);
-        dataManager.ImportPhenotypes(phenotypes);
-        
-        //Setup Panels
-        panelManager = new PanelManager();
-        referenceManager = new ReferenceManager(ReferencePath);
-        int count = 0;
-        for(String type:phenotypes.keySet()){
-            panelManager.AddPanel(type, GridStartX, GridStartY + (PanelSeparation*count), 
-                    FLANK, ColumnWidth, RowHeight,FragmentXOffset);  
-            count++;
-            //break;
-        }
-        
-        //Setup Variants
-        variantManager = new VariantManager(dataManager.ImportVCFFile());       
-        //Setup Fragments
-        fragmentManager = new FragmentManager(DataPath,CachePath);
-        try {
-            fragmentManager.ProcessFragments(phenotypes,referenceManager,
-                    panelManager,FLANK,variantManager.getSelectedVariant());
-        } catch (Exception ex) {
-            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        if(!TESTINGPANELS){
+            SetPrefsFile(args);
+
+            //Setup Import Utils
+            dataManager = new DataManager(DataPath,VariantPath,PhenotypePath);
+            dataManager.ImportPhenotypes(phenotypes);
+
+            //Setup Panels
+            panelManager = new PanelManager();
+            referenceManager = new ReferenceManager(ReferencePath);
+            int count = 0;
+            for(String type:phenotypes.keySet()){
+                panelManager.AddPanel(type, GridStartX, GridStartY + (PanelSeparation*count), 
+                        FLANK, ColumnWidth, RowHeight,FragmentXOffset);  
+                count++;
+                //break;
+            }
+
+            //Setup Variants
+            variantManager = new VariantManager(dataManager.ImportVCFFile());       
+            //Setup Fragments
+
+            fragmentManager = new FragmentManager(DataPath,CachePath);
+            try {
+                fragmentManager.ProcessFragments(phenotypes,referenceManager,
+                        panelManager,FLANK,variantManager.getSelectedVariant());
+            } catch (Exception ex) {
+                Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
     public void Render(Stage stage){
+        
+        if(TESTINGPANELS)
+            CreateTestPanel();
+        
         Group root = new Group();
         
         panelManager.RenderPanels(root,referenceManager,
                 fragmentManager.getMaxReadCount());
         
-        root.getChildren().add(SetupChartTitle((int) (WIDTH/2), 50));
+        if(!TESTINGPANELS)
+            root.getChildren().add(SetupChartTitle((int) (WIDTH/2), 50));
         
         Scene scene = new Scene(
                 root,
@@ -238,5 +260,108 @@ public class Engine{
             return file;   
         
         return null;
+    }
+    
+    private void CreateTestPanel(){
+        
+        SetupDebugParameters();
+        
+        referenceManager = new ReferenceManager(ReferencePath);
+        panelManager = new PanelManager();
+        fragmentManager = new FragmentManager(DataPath, CachePath);
+        String[] refData;
+        Map<String,FragmentNode>[] tempFragments;
+        int maxReadCount = -1;
+        
+        //Read Json panel Data
+        JSONParser parser = new JSONParser();
+
+	try {
+		Object obj = parser.parse(new FileReader("C:\\Users\\ranasi01\\Documents\\Project\\gv15\\test.json"));
+
+		JSONObject jsonObject = (JSONObject) obj;
+                tempFragments = new HashMap[jsonObject.size()];
+                refData = new String[jsonObject.size()];
+
+                for(Object objHeader:jsonObject.keySet()){
+                    
+                    //Add to reference
+                    String headerVal = (String)objHeader;
+                    int index = headerVal.indexOf("-");
+                    int colVal = Integer.parseInt(headerVal.substring(0, index));
+                    String refVal = headerVal.substring(index+1);
+                    refData[colVal] = refVal;
+                      
+                    //Add to panel
+                    tempFragments[colVal] = new HashMap();
+                    JSONObject baseJSON = (JSONObject)jsonObject.get(objHeader);
+                    int currentReadCount = 0;
+                    for(Object baseData:baseJSON.keySet()){
+                        String baseVal = (String)baseData;
+                        String baseType = baseVal.substring(0, 1);
+                        int readCount = Integer.parseInt(baseVal.substring(2));
+                        
+                        FragmentNode tempNode = new FragmentNode();
+                        tempNode.ReadCount = readCount;
+                        currentReadCount+=readCount;
+                        tempNode.ConnectedFragments = new HashMap();
+
+                        JSONArray connectedJSON = (JSONArray) baseJSON.get(baseData);
+                        Iterator<String> iterator = connectedJSON.iterator();
+
+                        while (iterator.hasNext()) {
+                            String connectedData = iterator.next();
+                            int connectedValIndex = connectedData.indexOf("[");
+                            String connectedVal = connectedData.substring(0, connectedValIndex);
+                            
+                            //Add connected Columns
+                            String connectedColumnsRaw = connectedData.substring(connectedValIndex+1,
+                                    connectedData.length()-1);
+                            String[] connectedCols = connectedColumnsRaw.split(",");     
+                            HashSet<Integer> connectedVals = new HashSet();
+                            for(String val:connectedCols){
+                                connectedVals.add(Integer.parseInt(val));
+                            }
+                            
+                            tempNode.ConnectedFragments.put(connectedVal, connectedVals);
+                        }
+                        
+                        tempFragments[colVal].put(baseType, tempNode);
+                    }  
+                    if(currentReadCount>maxReadCount)
+                        maxReadCount = currentReadCount;
+                }                
+            //Create Panel
+            panelManager.AddPanel("TestPanel",GridStartX, GridStartY + (PanelSeparation), 
+                    FLANK, ColumnWidth, RowHeight,FragmentXOffset); 
+            panelManager.GetPanelFromPhenotype("TestPanel").Fragments = tempFragments;
+            fragmentManager.maxReadCount = maxReadCount;
+
+            //Add to reference Data
+            referenceManager.AddReference("TestPanel", new ArrayList<String>(Arrays.asList(refData)));
+            referenceManager.ShiftVals = new HashMap();
+            referenceManager.ShiftVals.put("TestPanel", 0);
+            
+	} catch (FileNotFoundException e) {
+		e.printStackTrace();
+	} catch (IOException e) {
+		e.printStackTrace();
+	} catch (ParseException e) {
+		e.printStackTrace();
+	}
+
+    }
+    
+    private void SetupDebugParameters(){
+        WIDTH = 1000;
+        HEIGHT = 500;
+        GridStartX = 200;
+        GridStartY = 100;
+        PanelSeparation = 0;
+        ColumnWidth = 90;
+        RowHeight = 18;
+        FragmentXOffset = 20;
+        OutputType = "png";
+        FLANK = 3;
     }
 }

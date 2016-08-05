@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class FragmentManager {
     
-    private int maxReadCount;
+    public int maxReadCount;
     private String dataPath;
     private String cachePath;
     
