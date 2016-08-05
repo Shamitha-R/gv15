@@ -53,7 +53,7 @@ public class FragmentManager {
         readManager.LoadDataFromSamples(phenotypes, startCoord, endCoord,referenceManager);
         
         for(String type:phenotypes.keySet()){
-            //if(type.equals("Neg_Control")){
+            if(type.equals("Normal")){
                 
             ArrayList<ArrayList<String>> ReferenceDataCollection = new ArrayList();
             ArrayList<Map<String,FragmentNode>[]> FragmentsCollection = new ArrayList();
@@ -62,6 +62,8 @@ public class FragmentManager {
             Map<String,FragmentNode>[] tempFragments;
 
             for(int sampleNo = 0;sampleNo<phenotypes.get(type).size();sampleNo++){
+                
+                System.out.println("Processing Sample : "+phenotypes.get(type).get(sampleNo).FileName);
                 
                 tempReference = new ArrayList(readManager.loadedReferences.get(type));
                 if(ReferenceDataCollection.size() >= 2){
@@ -74,7 +76,10 @@ public class FragmentManager {
  
                 //Extract Insert Features
                 ArrayList<Feature> insertFeatures = new ArrayList();
-                ArrayList<Feature> extractedFeatures = readManager.tabletDataHandler.getLoadedFeatures().
+                ArrayList<Feature> extractedFeatures = new ArrayList();
+                if(readManager.tabletDataHandler.getLoadedFeatures().containsKey(
+                        phenotypes.get(type).get(sampleNo).FileName))  
+                    extractedFeatures = readManager.tabletDataHandler.getLoadedFeatures().
                                 get(phenotypes.get(type).get(sampleNo).FileName);
                 int insertCount = 0;
                 for(int i= 0;i<extractedFeatures.size();i++){
@@ -110,6 +115,11 @@ public class FragmentManager {
                         insertCount+=maxInsertions;                
                     }    
                 }
+                
+                                    
+                if(phenotypes.get(type).get(sampleNo).FileName.equals(
+                            "samples\\chr1_871234_871434_DA0059045_IonXpress_005_rawlib.bam"))
+                        System.err.println("");
 
                 //Extract Reads
                 int sampleReadCount = readManager.GetReadsForSample(phenotypes.get(type).get(sampleNo).FileName).size();
@@ -352,7 +362,7 @@ public class FragmentManager {
                 adjustedPos++;
             }
             referenceManager.ShiftVals.put(type, addedVal);
-            //}//Type Check
+            }//Type Check
 
         }//End phenoype
     }

@@ -146,7 +146,7 @@ public class AssemblyFileHandler extends SimpleJob
 			long s = System.currentTimeMillis();
 			reader.runJob(0);
 			long e = System.currentTimeMillis();
-			System.out.println("\nRead time: " + ((e-s)/1000f) + "s");
+			//System.out.println("\nRead time: " + ((e-s)/1000f) + "s");
 		}
 		catch(ReadException e)
 		{
