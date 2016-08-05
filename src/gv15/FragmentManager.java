@@ -53,16 +53,17 @@ public class FragmentManager {
         readManager.LoadDataFromSamples(phenotypes, startCoord, endCoord,referenceManager);
         
         for(String type:phenotypes.keySet()){
-            if(type.equals("Neg_Control")){
+            //if(type.equals("Neg_Control")){
                 
             ArrayList<ArrayList<String>> ReferenceDataCollection = new ArrayList();
             ArrayList<Map<String,FragmentNode>[]> FragmentsCollection = new ArrayList();
 
-            ArrayList<String> tempReference = new ArrayList(referenceManager.ReferenceData.get(type));
+            ArrayList<String> tempReference = new ArrayList();
             Map<String,FragmentNode>[] tempFragments;
 
             for(int sampleNo = 0;sampleNo<phenotypes.get(type).size();sampleNo++){
                 
+                tempReference = new ArrayList(readManager.loadedReferences.get(type));
                 if(ReferenceDataCollection.size() >= 2){
                     ReferenceDataCollection.clear();
                     FragmentsCollection.clear();
@@ -70,7 +71,7 @@ public class FragmentManager {
                     ReferenceDataCollection.add(new ArrayList(referenceManager.ReferenceData.get(type)));
                     FragmentsCollection.add(panelManager.GetPanelFromPhenotype(type).Fragments);                    
                 }
-
+ 
                 //Extract Insert Features
                 ArrayList<Feature> insertFeatures = new ArrayList();
                 ArrayList<Feature> extractedFeatures = readManager.tabletDataHandler.getLoadedFeatures().
@@ -137,107 +138,98 @@ public class FragmentManager {
                         String baseVal = readBases[baseIndex];
 
                         while(tempReference.get(testIndex).equals("INS")){
-//                           int insAmount = 1;
-//                           for(int insNum = 0;insNum<insertFeatures.size();insNum++){
-//
-//                                Feature event = insertFeatures.get(insNum);
-//                                CigarFeature cf = (CigarFeature)event; 
-//                                    for(CigarEvent e : cf.getEvents()){
-//                                        Read read = e.getRead();
-//                                        CigarInsertEvent insEvent = (CigarInsertEvent)e;
-//                                        if(ReadArrayContainsInsert(read, readArr)){
-//                                            int insertStartPos = (cf.getDataPS()+2)-startCoord;
-//
-//                                            int adjustedColIndex = colIndex+insCount; 
-//
-//                                            if((insertStartPos) == colIndex && !addedInsets.contains(insEvent)){
-//
-//                                                addedInsets.add(insEvent);
-//                                                
-//                                                insAmount = insEvent.getInsertedBases().length();
-//                                                if(tempFragments[testIndex]==null){
-//                                                    tempFragments[testIndex] = new HashMap();
-//                                                    FragmentNode tempNode = new FragmentNode();
-//                                                    tempNode.ReadCount = 1;
-//
-//                                                    if(colIndex < indexes.length - 1){
-//                                                        int nextIndex = ProbeToNextFragment(testIndex,tempReference);
-//                                                        if(indexes[colIndex+1] != -1){
-//                                                            tempNode.ConnectedFragments.put(UtilityFunctions.getInstance().GetBaseFromVal(
-//                                                                    testRMD.getStateAt(indexes[colIndex])), 
-//                                                                new HashSet<Integer>());
-//                                                            tempNode.ConnectedFragments.get(UtilityFunctions.getInstance().GetBaseFromVal(
-//                                                                    testRMD.getStateAt(indexes[colIndex]))).
-//                                                                    add(nextIndex);
-//                                                        }
-//                                                    }
-//                                                    AddInsertedBases(tempFragments, adjustedColIndex, insEvent.getInsertedBases(), tempNode);
-//                                                }else if(!tempFragments[testIndex].containsKey(insEvent.getInsertedBases())){
-//                                                    FragmentNode tempNode = new FragmentNode();
-//                                                    tempNode.ReadCount = 1;
-//
-//                                                    if(colIndex < indexes.length - 1){
-//                                                        int nextIndex = ProbeToNextFragment(testIndex,tempReference);
-//                                                        if(indexes[colIndex+1] != -1){
-//                                                            tempNode.ConnectedFragments.put(UtilityFunctions.getInstance().GetBaseFromVal(
-//                                                                    testRMD.getStateAt(indexes[colIndex])), 
-//                                                                new HashSet<Integer>());
-//                                                            tempNode.ConnectedFragments.get(UtilityFunctions.getInstance().GetBaseFromVal(
-//                                                                    testRMD.getStateAt(indexes[colIndex]))).
-//                                                                    add(nextIndex);
-//                                                        }
-//                                                    } 
-//                                                    AddInsertedBases(tempFragments, adjustedColIndex, insEvent.getInsertedBases(), tempNode);
-//                                                }else{
-//                                                    if(colIndex < indexes.length - 1){
-//                                                        int nextIndex = ProbeToNextFragment(testIndex,tempReference);
-//                                                        if(!tempFragments[testIndex].get(insEvent.getInsertedBases()).ConnectedFragments.
-//                                                                containsKey(UtilityFunctions.getInstance().GetBaseFromVal(
-//                                                                        testRMD.getStateAt(indexes[colIndex+1])))){
-//                                                            if(indexes[colIndex+1] != -1){
-//                                                                tempFragments[testIndex].get(insEvent.getInsertedBases()).ConnectedFragments.
-//                                                                        put(UtilityFunctions.getInstance().GetBaseFromVal(
-//                                                                                testRMD.getStateAt(indexes[colIndex])), 
-//                                                                        new HashSet<Integer>());
-//                                                                tempFragments[testIndex].get(insEvent.getInsertedBases()).ConnectedFragments.
-//                                                                        get(UtilityFunctions.getInstance().GetBaseFromVal(
-//                                                                                testRMD.getStateAt(indexes[colIndex]))).
-//                                                                        add(nextIndex);
-//                                                            }
-//                                                        }
-//                                                    }
-//                                                    tempFragments[testIndex].get(insEvent.getInsertedBases()).ReadCount++;
-//                                                }
-//
-//                                                //Add to previous
-//                                                if(colIndex!=0){
-//                                                    String prevVal = UtilityFunctions.getInstance().GetBaseFromVal(
-//                                                            testRMD.getStateAt(indexes[colIndex]-1));
-//
-//                                                    if(tempFragments[testIndex-1].containsKey(prevVal)){
-//                                                        if(tempFragments[testIndex-1].get(prevVal).ConnectedFragments.
-//                                                                containsKey(Character.toString(insEvent.getInsertedBases().charAt(0)))){
-//                                                            tempFragments[testIndex-1].get(prevVal).ConnectedFragments.
-//                                                                    get(Character.toString(insEvent.getInsertedBases().charAt(0))).
-//                                                                    add(testIndex);
-//                                                        }else
-//                                                        {
-//                                                            tempFragments[testIndex-1].get(prevVal).ConnectedFragments.
-//                                                                    put(Character.toString(insEvent.getInsertedBases().charAt(0))
-//                                                                            , new HashSet<Integer>());
-//                                                            tempFragments[testIndex-1].get(prevVal).ConnectedFragments.
-//                                                                    get(Character.toString(insEvent.getInsertedBases().charAt(0))
-//                                                                    ).add(testIndex);
-//                                                        }
-//                                                    }
-//                                                }
-//
-//                                            }
-//                                        }
-//                                    }
-//                            }                    
-//                           testIndex+=insAmount;
-//                           insCount+=insAmount;           
+                           int insAmount = 1;
+                           for(int insNum = 0;insNum<insertFeatures.size();insNum++){
+
+                                Feature event = insertFeatures.get(insNum);
+                                CigarFeature cf = (CigarFeature)event; 
+                                    for(CigarEvent e : cf.getEvents()){
+                                        Read read = e.getRead();
+                                        CigarInsertEvent insEvent = (CigarInsertEvent)e;
+                                        if(CheckMatchingRead(read, currentRead)){
+                                            int insertStartPos = (cf.getDataPS()+2)-startCoord;
+
+                                            int adjustedColIndex = colIndex+insCount; 
+
+                                            if((insertStartPos) == colIndex && !addedInsets.contains(insEvent)){
+
+                                                addedInsets.add(insEvent);
+                                                
+                                                insAmount = insEvent.getInsertedBases().length();
+                                                if(tempFragments[testIndex]==null){
+                                                    tempFragments[testIndex] = new HashMap();
+                                                    FragmentNode tempNode = new FragmentNode();
+                                                    tempNode.ReadCount = 1;
+
+                                                    if(colIndex < indexLength - 1){
+                                                        int nextIndex = ProbeToNextFragment(testIndex,tempReference);
+                                                        //if(readBases[colIndex+1] != -1){
+                                                            tempNode.ConnectedFragments.put(readBases[baseIndex], 
+                                                                new HashSet<Integer>());
+                                                            tempNode.ConnectedFragments.get(readBases[baseIndex]).
+                                                                    add(nextIndex);
+                                                        //}
+                                                    }
+                                                    AddInsertedBases(tempFragments, adjustedColIndex, insEvent.getInsertedBases(), tempNode);
+                                                }else if(!tempFragments[testIndex].containsKey(insEvent.getInsertedBases())){
+                                                    FragmentNode tempNode = new FragmentNode();
+                                                    tempNode.ReadCount = 1;
+
+                                                    if(colIndex < indexLength - 1){
+                                                        int nextIndex = ProbeToNextFragment(testIndex,tempReference);
+                                                        //if(indexes[colIndex+1] != -1){
+                                                            tempNode.ConnectedFragments.put(readBases[baseIndex], 
+                                                                new HashSet<Integer>());
+                                                            tempNode.ConnectedFragments.get(readBases[baseIndex]).
+                                                                    add(nextIndex);
+                                                        //}
+                                                    } 
+                                                    AddInsertedBases(tempFragments, adjustedColIndex, insEvent.getInsertedBases(), tempNode);
+                                                }else{
+                                                    if(colIndex < indexLength - 1){
+                                                        int nextIndex = ProbeToNextFragment(testIndex,tempReference);
+                                                        if(!tempFragments[testIndex].get(insEvent.getInsertedBases()).ConnectedFragments.
+                                                                containsKey(readBases[baseIndex+1])){
+                                                            //if(indexes[colIndex+1] != -1){
+                                                                tempFragments[testIndex].get(insEvent.getInsertedBases()).ConnectedFragments.
+                                                                        put(readBases[baseIndex], 
+                                                                        new HashSet<Integer>());
+                                                                tempFragments[testIndex].get(insEvent.getInsertedBases()).ConnectedFragments.
+                                                                        get(readBases[baseIndex]).add(nextIndex);
+                                                            //}
+                                                        }
+                                                    }
+                                                    tempFragments[testIndex].get(insEvent.getInsertedBases()).ReadCount++;
+                                                }
+
+                                                //Add to previous
+                                                if(colIndex!=0){
+                                                    String prevVal = readBases[baseIndex-1];
+
+                                                    if(tempFragments[testIndex-1].containsKey(prevVal)){
+                                                        if(tempFragments[testIndex-1].get(prevVal).ConnectedFragments.
+                                                                containsKey(Character.toString(insEvent.getInsertedBases().charAt(0)))){
+                                                            tempFragments[testIndex-1].get(prevVal).ConnectedFragments.
+                                                                    get(Character.toString(insEvent.getInsertedBases().charAt(0))).
+                                                                    add(testIndex);
+                                                        }else
+                                                        {
+                                                            tempFragments[testIndex-1].get(prevVal).ConnectedFragments.
+                                                                    put(Character.toString(insEvent.getInsertedBases().charAt(0))
+                                                                            , new HashSet<Integer>());
+                                                            tempFragments[testIndex-1].get(prevVal).ConnectedFragments.
+                                                                    get(Character.toString(insEvent.getInsertedBases().charAt(0))
+                                                                    ).add(testIndex);
+                                                        }
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                    }
+                            }                    
+                           testIndex+=insAmount;
+                           insCount+=insAmount;           
                        }//End insert handling loop 
 
                         //byte rmdData = testRMD.getStateAt(indexes[colIndex]);
@@ -264,25 +256,29 @@ public class FragmentManager {
                                 if(colIndex < indexLength - 1){
                                     int nextIndex = ProbeToNextFragment(testIndex,tempReference);
                                     //if(indexes[colIndex+1] != -1){
-                                        tempNode.ConnectedFragments.put(readBases[bas+1], 
+                                        tempNode.ConnectedFragments.put(readBases[baseIndex+1], 
                                                 new HashSet<Integer>());
-                                        tempNode.ConnectedFragments.get(readBases[colIndex+1]).
+                                        tempNode.ConnectedFragments.get(readBases[baseIndex+1]).
                                                 add(nextIndex);                               
                                     //}
                                 }
                                 tempFragments[testIndex].put(baseVal, tempNode);
                             }else{
                                  if(colIndex < indexLength - 1){
+                                     
+                                    // if(testIndex == 19)
+                                         //System.err.println("");
+                                     
                                     int nextIndex = ProbeToNextFragment(testIndex,tempReference);
 
                                     if(!tempFragments[testIndex].get(baseVal).ConnectedFragments.
-                                            containsKey(readBases[colIndex+1])){
+                                            containsKey(readBases[baseIndex+1])){
                                         //if(readBases[colIndex+1] != -1){
                                             tempFragments[testIndex].get(baseVal).ConnectedFragments.
-                                                    put(readBases[colIndex+1], 
+                                                    put(readBases[baseIndex+1], 
                                                     new HashSet<Integer>());
                                             tempFragments[testIndex].get(baseVal).ConnectedFragments.
-                                                    get(readBases[colIndex+1]).add(nextIndex);
+                                                    get(readBases[baseIndex+1]).add(nextIndex);
                                         //}
                                     }else{
         //                                Fragments[testIndex].get(val).ConnectedFragments.
@@ -356,7 +352,7 @@ public class FragmentManager {
                 adjustedPos++;
             }
             referenceManager.ShiftVals.put(type, addedVal);
-            }//Type Check
+            //}//Type Check
 
         }//End phenoype
     }
@@ -449,12 +445,10 @@ public class FragmentManager {
         }
     }
       
-    public boolean ReadArrayContainsInsert(Read targetRead,Read[] readArr){
-        for(Read read:readArr){
-            if(read!=null && targetRead.getID() == read.getID())
+    public boolean CheckMatchingRead(Read targetRead,gv15.Read primaryRead){
+        if(primaryRead!=null && targetRead.getID() == primaryRead.ReadID)
                 return true;
-        }
-        
+
         return false;
     }
     
@@ -646,7 +640,7 @@ public class FragmentManager {
     
     public int ProbeToNextFragment(int currentIndex,ArrayList<String> reference){
         currentIndex++;
-        while(reference.get(currentIndex)=="INS")
+        while(reference.get(currentIndex).equals("INS"))
             currentIndex++;
         
         return currentIndex;

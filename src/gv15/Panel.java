@@ -55,7 +55,7 @@ public class Panel {
         ArrayList<Shape> renderArea = SetupRenderArea((rows*2), columns, columnWidth, 
                 rowHeight, PositionX, PositionY);        
         ArrayList<Shape> referenceRender = SetupReferenceRender(refereneceData,
-                PositionX,PositionY,rowHeight,columnWidth);  
+                PositionX,PositionY,rowHeight,columnWidth,columns);  
         ArrayList<Shape> fragmentRenders = SetupFragments(refereneceData,
                 PositionX, PositionY, rowHeight, columnWidth, columns, maxReadCount);
        
@@ -143,11 +143,11 @@ public class Panel {
     }
     
     private ArrayList<Shape> SetupReferenceRender(ArrayList<String> referenceData,
-            double startX,double startY,double rowHeight,double colWidth){
+            double startX,double startY,double rowHeight,double colWidth,int cols){
         ArrayList<Shape> renderTexts = new ArrayList<Shape>();
         
         //Reference BasePairs
-        for(int refIndex = 0;refIndex<referenceData.size();refIndex++){
+        for(int refIndex = 0;refIndex<cols;refIndex++){
             Text tempText = new Text(startX + (colWidth*refIndex) + (colWidth/2), 
                     startY, referenceData.get(refIndex));
             renderTexts.add(tempText);
@@ -203,15 +203,9 @@ public class Panel {
                         tempLine.setStroke(Color.BLUEVIOLET);
                     
                     renderElements.add(tempLine); 
-                    
-                    //Add Read count render
-                    Text tempText = new Text((colNum * colWidth) + gridX + XOFFSET + (readSize/2) + FragmentXOffset - 5,
-                            (baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2) + 5,
-                            Integer.toString(val.ReadCount ));
-                    renderElements.add(tempText);                    
-                    
+
                     //Connect the fragments
-                    if(colNum < (cols)){
+                    if(colNum < cols){
                         for(int nextBase = 0;nextBase<5;nextBase++){
                             if(val.ConnectedFragments != null &&
                                     val.ConnectedFragments.containsKey(UtilityFunctions.
@@ -224,8 +218,9 @@ public class Panel {
 
                                 for (Integer colVal : connectedColumns) {
 
-                                    if(!Fragments[colVal].containsKey(connectedVal))
-                                        System.err.println("");
+                                    if(Fragments[colVal].containsKey(connectedVal) &&
+                                            colVal < cols){
+
                                     
                                     float nextReadSize = 1 + ((Fragments[colVal].get(connectedVal).ReadCount
                                         /(maxReadCount*1.0f))*13.0f);    
@@ -321,8 +316,16 @@ public class Panel {
                                     }                                    
                                 }          
                             }
+                            }
                         }
                     }
+                    
+                    //Add Read count render
+                    Text tempText = new Text((colNum * colWidth) + gridX + XOFFSET + (readSize/2) + FragmentXOffset - 5,
+                            (baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2) + 5,
+                            Integer.toString(val.ReadCount ));
+                    renderElements.add(tempText);                    
+                    
                 }
             }
         }

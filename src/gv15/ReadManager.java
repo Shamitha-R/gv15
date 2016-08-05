@@ -17,19 +17,20 @@ public class ReadManager {
     private HashMap<String,ArrayList<Read>> readCollection;
     private String dataPath;
     
+    public HashMap<String,ArrayList<String>> loadedReferences;   
     public TabletDataHandler tabletDataHandler;
     
     public ReadManager(String referencePath,String dataPath,String cachePath){
         readCollection = new HashMap();
         tabletDataHandler = new TabletDataHandler(cachePath);
-
+        loadedReferences = new HashMap();
         this.dataPath = dataPath;
     }
     
     public void LoadDataFromSamples(HashMap<String,ArrayList<Phenotype>> phenotypes,
             int startCoordinate,int endCoordinate,ReferenceManager referenceManager){
         for(String type:phenotypes.keySet()){
-            if(type.equals("Neg_Control")){
+            //if(type.equals("Neg_Control")){
             int sampleNo = 0;
             for(Phenotype currentPhenotype:phenotypes.get(type)){
 
@@ -91,7 +92,8 @@ public class ReadManager {
             //TODO: Read reference only once without reloading when reading 
             //different samples
             referenceManager.AddReference(type, tabletDataHandler.getLoadedReference());
-        }//End type checking
+        //}//End type checking
+            loadedReferences.put(type, tabletDataHandler.getLoadedReference());
         }
         
 
