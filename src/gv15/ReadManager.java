@@ -30,7 +30,7 @@ public class ReadManager {
     public void LoadDataFromSamples(HashMap<String,ArrayList<Phenotype>> phenotypes,
             int startCoordinate,int endCoordinate,ReferenceManager referenceManager){
         for(String type:phenotypes.keySet()){
-            if(type.equals("Normal")){
+            //if(type.equals("Neg_Control")){
             int sampleNo = 0;
             for(Phenotype currentPhenotype:phenotypes.get(type)){
 
@@ -39,7 +39,7 @@ public class ReadManager {
                     dataPath + "\\" + currentPhenotype.FileName,
                     referenceManager.getReferencePath()
                 };
-                
+
                 //Call the Tablet library to load the sample data
                 try {
                     tabletDataHandler.ExtractDataAtCoordinates(fileNames, startCoordinate, endCoordinate, 
@@ -92,7 +92,7 @@ public class ReadManager {
             //TODO: Read reference only once without reloading when reading 
             //different samples
             referenceManager.AddReference(type, tabletDataHandler.getLoadedReference());
-        }//End type checking
+        //}//End type checking
             loadedReferences.put(type, tabletDataHandler.getLoadedReference());
         }
         

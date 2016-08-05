@@ -53,7 +53,7 @@ public class FragmentManager {
         readManager.LoadDataFromSamples(phenotypes, startCoord, endCoord,referenceManager);
         
         for(String type:phenotypes.keySet()){
-            if(type.equals("Normal")){
+            //if(type.equals("Neg_Control")){
                 
             ArrayList<ArrayList<String>> ReferenceDataCollection = new ArrayList();
             ArrayList<Map<String,FragmentNode>[]> FragmentsCollection = new ArrayList();
@@ -115,11 +115,6 @@ public class FragmentManager {
                         insertCount+=maxInsertions;                
                     }    
                 }
-                
-                                    
-                if(phenotypes.get(type).get(sampleNo).FileName.equals(
-                            "samples\\chr1_871234_871434_DA0059045_IonXpress_005_rawlib.bam"))
-                        System.err.println("");
 
                 //Extract Reads
                 int sampleReadCount = readManager.GetReadsForSample(phenotypes.get(type).get(sampleNo).FileName).size();
@@ -156,7 +151,8 @@ public class FragmentManager {
                                     for(CigarEvent e : cf.getEvents()){
                                         Read read = e.getRead();
                                         CigarInsertEvent insEvent = (CigarInsertEvent)e;
-                                        if(CheckMatchingRead(read, currentRead)){
+                                        if(CheckMatchingRead(read, readManager.GetReadsForSample(
+                                                    phenotypes.get(type).get(sampleNo).FileName))){
                                             int insertStartPos = (cf.getDataPS()+2)-startCoord;
 
                                             int adjustedColIndex = colIndex+insCount; 
@@ -362,7 +358,7 @@ public class FragmentManager {
                 adjustedPos++;
             }
             referenceManager.ShiftVals.put(type, addedVal);
-            }//Type Check
+            //}//Type Check
 
         }//End phenoype
     }
@@ -455,8 +451,9 @@ public class FragmentManager {
         }
     }
       
-    public boolean CheckMatchingRead(Read targetRead,gv15.Read primaryRead){
-        if(primaryRead!=null && targetRead.getID() == primaryRead.ReadID)
+    public boolean CheckMatchingRead(Read targetRead,ArrayList<gv15.Read> primaryReads){
+        for(gv15.Read primaryRead:primaryReads)
+            if(primaryRead!=null && targetRead.getID() == primaryRead.ReadID)
                 return true;
 
         return false;
@@ -483,6 +480,26 @@ public class FragmentManager {
             
             fragments[index].put(Character.toString(insertedBases.charAt(charIndex)), 
                     tempNode);
+            
+            //Add to prev
+            if(charIndex > 0){
+
+               if(fragments[index-1].get(Character.toString(insertedBases.charAt(charIndex-1))).
+                       ConnectedFragments == null)
+                   fragments[index-1].get(Character.toString(insertedBases.charAt(charIndex-1))).
+                           ConnectedFragments = new HashMap();
+               
+               if(!fragments[index-1].get(Character.toString(insertedBases.charAt(charIndex-1))).
+                       ConnectedFragments.containsKey(Character.toString(insertedBases.charAt(charIndex)))){
+                   fragments[index-1].get(Character.toString(insertedBases.charAt(charIndex-1))).ConnectedFragments.
+                           put(Character.toString(insertedBases.charAt(charIndex)), 
+                        new HashSet<Integer>());
+               }
+               
+               fragments[index-1].get(Character.toString(insertedBases.charAt(charIndex-1))).ConnectedFragments.
+                       get(Character.toString(insertedBases.charAt(charIndex))).add(index);
+            }
+            
             index++;
         }
     }

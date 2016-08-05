@@ -122,7 +122,7 @@ public class Engine{
                 fragmentManager.getMaxReadCount());
         
         if(!TESTINGPANELS)
-            root.getChildren().add(SetupChartTitle((int) (WIDTH/2), 50));
+            root.getChildren().add(SetupChartTitle(5, 25));
         
         Scene scene = new Scene(
                 root,
