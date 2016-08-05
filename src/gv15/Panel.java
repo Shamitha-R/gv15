@@ -52,7 +52,7 @@ public class Panel {
             int maxReadCount,int offset){
         ArrayList<Shape> renderVariance = SetupVariance(PositionX,PositionY, 
                 Flank+offset,columnWidth, rowHeight);
-        ArrayList<Shape> renderArea = SetupRenderArea((rows*2)+1, columns, columnWidth, 
+        ArrayList<Shape> renderArea = SetupRenderArea((rows*2), columns, columnWidth, 
                 rowHeight, PositionX, PositionY);        
         ArrayList<Shape> referenceRender = SetupReferenceRender(refereneceData,
                 PositionX,PositionY,rowHeight,columnWidth);  
@@ -102,7 +102,7 @@ public class Panel {
             Line tempLine = new Line();
             tempLine.setStartX(startX + (rowHeight/2));
             tempLine.setStartY(startY + (row * rowHeight) + (rowHeight/2));
-            tempLine.setEndX(startX + (cols+1) * colWidth - (rowHeight/2));
+            tempLine.setEndX(startX + (cols) * colWidth - (rowHeight/2));
             tempLine.setEndY(startY + (row * rowHeight) + (rowHeight/2));
             tempLine.setStrokeWidth(rowHeight);
             

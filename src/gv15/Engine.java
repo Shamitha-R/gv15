@@ -58,6 +58,7 @@ public class Engine{
     public String VariantPath;
     public String PhenotypePath;
     public String OutputType;
+    public String TestingInputPath;
 
     public double GridStartX;
     public double GridStartY;
@@ -277,7 +278,7 @@ public class Engine{
         JSONParser parser = new JSONParser();
 
 	try {
-		Object obj = parser.parse(new FileReader("C:\\Users\\ranasi01\\Documents\\Project\\gv15\\test.json"));
+		Object obj = parser.parse(new FileReader(TestingInputPath));
 
 		JSONObject jsonObject = (JSONObject) obj;
                 tempFragments = new HashMap[jsonObject.size()];
@@ -353,6 +354,7 @@ public class Engine{
     }
     
     private void SetupDebugParameters(){
+        TestingInputPath = "C:\\Users\\ranasi01\\Documents\\Project\\gv15\\test.json";
         WIDTH = 1000;
         HEIGHT = 500;
         GridStartX = 200;
