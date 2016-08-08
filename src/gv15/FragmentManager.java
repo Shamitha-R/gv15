@@ -1,25 +1,12 @@
 package gv15;
 
-import analysis.PackCreator;
-import data.Assembly;
-import data.Consensus;
-import data.Contig;
-import data.IReadManager;
-import data.LineData;
 import data.Read;
-import data.ReadMetaData;
 import data.auxiliary.CigarEvent;
 import data.auxiliary.CigarFeature;
 import data.auxiliary.CigarInsertEvent;
 import data.auxiliary.Feature;
 import htsjdk.variant.variantcontext.VariantContext;
-import io.AssemblyFile;
-import io.AssemblyFileHandler;
-import io.TabletFile;
-import io.TabletFileHandler;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
