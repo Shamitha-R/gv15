@@ -15,4 +15,4 @@ rowheight=18
 fragmentxoffset=20
 outputtype=png
 phenotypecolumn=4
-readcountrenderthreshold=50
+readcountrenderthreshold=0

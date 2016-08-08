@@ -11,12 +11,14 @@ import java.util.HashMap;
 public class ReferenceManager {
 
     public HashMap<String,ArrayList<String>> ReferenceData;
+    public HashMap<String,ArrayList<String>> AdjustedReferenceData;
     public HashMap<String,Integer> ShiftVals;
     
     private String referencePath;
     
     public ReferenceManager(String referencePath){
         ReferenceData = new HashMap();
+        AdjustedReferenceData = new HashMap();
         ShiftVals = new HashMap();
         this.referencePath = referencePath;
     }
@@ -69,5 +71,24 @@ public class ReferenceManager {
     
     public String getReferencePath(){
         return referencePath;
+    }
+    
+    public void AdjustReferences(HashMap<String,int[]> insertionArray){
+        
+        for(String type:insertionArray.keySet()){
+            
+            ArrayList<String> tempRef = new ArrayList();
+                    
+            for(int i = 0;i<insertionArray.get(type).length;i++){
+                int insertionCount = insertionArray.get(type)[i];                
+                tempRef.add(ReferenceData.get(type).get(i));
+                
+                while(insertionCount > 0){
+                    tempRef.add("INS");
+                    insertionCount--;
+                }
+            }
+            AdjustedReferenceData.put(type, tempRef);
+        }        
     }
 }

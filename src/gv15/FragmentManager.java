@@ -37,10 +37,111 @@ public class FragmentManager {
         //Load the Read data for all Samples
         readManager = new ReadManager(referenceManager.getReferencePath(),
                 dataPath,cachePath);
-        readManager.LoadDataFromSamples(phenotypes, startCoord, endCoord,referenceManager);
-        
+        readManager.LoadDataFromSamples(phenotypes, startCoord, endCoord,referenceManager,currentVariant);
+        readManager.CreateInsertionArrays(phenotypes,startCoord);
+                        
+        //Adjust references for insertions
+        referenceManager.AdjustReferences(readManager.InsertionArrays);
+
+        //Create the Panel with Fragments using the extracted Data
         for(String type:phenotypes.keySet()){
-            //if(type.equals("Normal")){
+            if(type.equals("Neg_Control")){
+ 
+                int panelSize = referenceManager.AdjustedReferenceData.get(type).size();
+                panelManager.GetPanelFromPhenotype(type).Fragments = new HashMap[panelSize];
+                
+                Map<String,FragmentNode>[] tempFrags = new HashMap[panelSize];
+                //Create each panel column
+                int totalInsertColumns = 0;
+                int panelColumnNo = 0;
+                for(int columnNo = 0;columnNo<readManager.InsertionArrays.get(type).length;columnNo++){
+                       
+                    int insertCount = readManager.InsertionArrays.get(type)[columnNo];
+
+                    //Loop through all the samples for the phenotype
+                    for(int sampleNo = 0;sampleNo<phenotypes.get(type).size();sampleNo++){
+
+                        //Extract Reads for sample
+                        int sampleReadCount = readManager.GetReadsForSample(
+                                phenotypes.get(type).get(sampleNo).FileName).size();
+                        
+                        //Loop through all the reads for the sample
+                        for(int readNo = 0;readNo<sampleReadCount;readNo++){
+                            gv15.Read currentRead = readManager.GetReadsForSample(
+                                phenotypes.get(type).get(sampleNo).FileName).get(readNo);
+
+                            String[] readBases = currentRead.BaseValues;
+                            //Ensure that the read is within the target region
+                            int baseIndex = (startCoord - (currentRead.StartPosition+1)) + columnNo; 
+                            
+                            //Inserts are present in the following columns
+                            if(insertCount > 0){
+                                System.err.println("");
+                            }
+
+                            if(baseIndex > 0 && baseIndex < currentRead.Length){
+                                String baseVal = readBases[baseIndex];
+                                FragmentNode tempFragNode = new FragmentNode();  
+                                    
+                                if(tempFrags[columnNo] == null)
+                                    tempFrags[columnNo] = new HashMap();
+                                    
+                                if(!tempFrags[columnNo].containsKey(baseVal))
+                                    tempFrags[columnNo].put(baseVal, tempFragNode);
+                                    
+                                //Increment the Read Count
+                                tempFrags[columnNo].get(baseVal).ReadCount++;
+                                    
+                                //Get the Insert features of the current Read
+                                ArrayList<InsertFeature> insertFeatures = readManager.GetInsertsForReadAtPosition(currentRead,
+                                    phenotypes.get(type).get(sampleNo).FileName,columnNo,startCoord);
+                                                                                                           
+                                if(tempFrags[columnNo].get(baseVal).ConnectedFragments == null)
+                                    tempFrags[columnNo].get(baseVal).ConnectedFragments = new HashMap();
+                                
+                                //No inserts for this read therefore connect directly with the next Base
+                                if(insertFeatures.isEmpty()){
+                                    //Add connected Fragments
+                                    if( (baseIndex+1) < currentRead.Length){
+                                        String nextBaseVal = readBases[baseIndex+1];
+
+                                        if(!tempFrags[columnNo].get(baseVal).ConnectedFragments.containsKey(nextBaseVal))
+                                            tempFrags[columnNo].get(baseVal).ConnectedFragments.put(nextBaseVal, new HashSet());
+
+                                        tempFrags[columnNo].get(baseVal).ConnectedFragments.get(nextBaseVal).
+                                                add(panelColumnNo+insertCount+totalInsertColumns+1);
+
+                                    }                                        
+                                }else{
+                                    for(InsertFeature insFeature:insertFeatures){
+                                        //Add the inserted Fragments
+                                        AddInsertedBases(tempFrags, columnNo+1, insFeature.InsertedBases,insertCount);
+                                        
+                                        //Connect the current Fragment to the inserted Fragment
+                                        String nextBaseVal = insFeature.InsertedBases.get(0);
+                                       
+                                        if(!tempFrags[columnNo].get(baseVal).ConnectedFragments.containsKey(nextBaseVal))
+                                            tempFrags[columnNo].get(baseVal).ConnectedFragments.put(nextBaseVal, new HashSet());
+
+                                        tempFrags[columnNo].get(baseVal).ConnectedFragments.get(nextBaseVal).
+                                                add(panelColumnNo+totalInsertColumns+1);
+                                    }
+                                }
+                            }
+                        }//End Read loop
+                    }//End sample Loop
+                    
+                    if(insertCount > 0)
+                        System.err.println("");
+                    panelColumnNo+=(insertCount+1);
+                    totalInsertColumns+=insertCount;
+                    
+                }//End Column Loop
+            }//End Type Check
+        }//End Phenotype Loop
+            
+        for(String type:phenotypes.keySet()){
+            if(type.equals("Neg_Control")){
                 
             ArrayList<ArrayList<String>> ReferenceDataCollection = new ArrayList();
             ArrayList<Map<String,FragmentNode>[]> FragmentsCollection = new ArrayList();
@@ -163,7 +264,7 @@ public class FragmentManager {
                                                                     add(nextIndex);
                                                         //}
                                                     }
-                                                    AddInsertedBases(tempFragments, adjustedColIndex, insEvent.getInsertedBases(), tempNode);
+                                                    AddInsertedBases_OLD(tempFragments, adjustedColIndex, insEvent.getInsertedBases(), tempNode);
                                                 }else if(!tempFragments[testIndex].containsKey(insEvent.getInsertedBases())){
                                                     FragmentNode tempNode = new FragmentNode();
                                                     tempNode.ReadCount = 1;
@@ -177,7 +278,7 @@ public class FragmentManager {
                                                                     add(nextIndex);
                                                         //}
                                                     } 
-                                                    AddInsertedBases(tempFragments, adjustedColIndex, insEvent.getInsertedBases(), tempNode);
+                                                    AddInsertedBases_OLD(tempFragments, adjustedColIndex, insEvent.getInsertedBases(), tempNode);
                                                 }else{
                                                     if(colIndex < indexLength - 1){
                                                         int nextIndex = ProbeToNextFragment(testIndex,tempReference);
@@ -345,10 +446,16 @@ public class FragmentManager {
                 adjustedPos++;
             }
             referenceManager.ShiftVals.put(type, addedVal);
-            //}//Type Check
-
+            }//Type Check
+            
         }//End phenoype
     }
+    
+    public void AddInsertedBases(Map<String,FragmentNode>[] fragments, int index,
+            ArrayList<String> insertedBases,int fullInsertCount){
+        
+    }    
+    
     public void Adjust2(ArrayList<String> newRef,
             Map<String,FragmentNode>[] fragments,ArrayList<String> combinedRef){
         
@@ -446,7 +553,7 @@ public class FragmentManager {
         return false;
     }
     
-    public void AddInsertedBases(Map<String,FragmentNode>[] fragments, int index,
+    public void AddInsertedBases_OLD(Map<String,FragmentNode>[] fragments, int index,
             String insertedBases,FragmentNode fragmentNode){
         for(int charIndex = 0;charIndex<insertedBases.length();charIndex++){
             
@@ -649,8 +756,6 @@ public class FragmentManager {
 
         }
     }
-    
-
     
     public int ProbeToNextFragment(int currentIndex,ArrayList<String> reference){
         currentIndex++;
