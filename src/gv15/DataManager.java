@@ -20,31 +20,17 @@ public class DataManager {
     private String filePath;
     private String variantPath;
     private String phenotypePath;
-    private String[] bamFiles;
+    private int phenotypeColumn;
 
-    public DataManager(String filePath,String variantPath,String phenotypePath){
+    public DataManager(String filePath,String variantPath,String phenotypePath,int phenotypeColumn){
         this.filePath = filePath;
         this.variantPath = variantPath;
         this.phenotypePath = phenotypePath;
+        this.phenotypeColumn = phenotypeColumn;
     }
     
     public File ImportVCFFile(){
         return new File(variantPath);
-    }
-    
-    public String[] getBamFiles(){
-        
-        bamFiles = new String[]{           
-            //"samples\\chr1_871234_871434_DA0059011_IonXpress_001_rawlib.bam",
-            "samples\\chr1_871234_871434_DA0057131_IonXpress_002_rawlib.bam",
-            //"samples\\chr1_871234_871434_DA0057156_IonXpress_003_rawlib.bam",
-            //"samples\\chr1_871234_871434_DA0057131_IonXpress_004_rawlib.bam"
-            //"samples\\chr1_871234_871434_DA0059025_IonXpress_005_rawlib.bam"
-            //"samples\\chr1_871234_871434_DA0057129_IonXpress_012_rawlib.bam",
-            //"data00.bam"
-        };
-        
-        return bamFiles;
     }
 
     public void ImportPhenotypes(HashMap<String,ArrayList<Phenotype>> phenotypes) {
@@ -63,10 +49,10 @@ public class DataManager {
                 tempPhenotype.IID = nextLine[1];
                 tempPhenotype.FileName = "samples\\"+nextLine[2];
                 
-                if(!phenotypes.containsKey(nextLine[3]))
-                    phenotypes.put(nextLine[3], new ArrayList());
+                if(!phenotypes.containsKey(nextLine[phenotypeColumn]))
+                    phenotypes.put(nextLine[phenotypeColumn], new ArrayList());
 
-                phenotypes.get(nextLine[3]).add(tempPhenotype); 
+                phenotypes.get(nextLine[phenotypeColumn]).add(tempPhenotype); 
             }
         } catch (IOException ex) {
             Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);

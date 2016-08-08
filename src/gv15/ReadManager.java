@@ -30,7 +30,7 @@ public class ReadManager {
     public void LoadDataFromSamples(HashMap<String,ArrayList<Phenotype>> phenotypes,
             int startCoordinate,int endCoordinate,ReferenceManager referenceManager){
         for(String type:phenotypes.keySet()){
-            //if(type.equals("Neg_Control")){
+            //if(type.equals("Normal")){
             int sampleNo = 0;
             for(Phenotype currentPhenotype:phenotypes.get(type)){
 

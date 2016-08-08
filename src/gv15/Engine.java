@@ -58,6 +58,7 @@ public class Engine{
     public String VariantPath;
     public String PhenotypePath;
     public String OutputType;
+    public String TestFilePath;
 
     public double GridStartX;
     public double GridStartY;
@@ -65,6 +66,7 @@ public class Engine{
     public int ColumnWidth;
     public int RowHeight;
     public int FragmentXOffset;  
+    public int PhenotypeColumn;    
     
     //Debug Commands
     boolean TESTINGPANELS = false;
@@ -83,7 +85,7 @@ public class Engine{
             SetPrefsFile(args);
 
             //Setup Import Utils
-            dataManager = new DataManager(DataPath,VariantPath,PhenotypePath);
+            dataManager = new DataManager(DataPath,VariantPath,PhenotypePath,PhenotypeColumn);
             dataManager.ImportPhenotypes(phenotypes);
 
             //Setup Panels
@@ -239,6 +241,11 @@ public class Engine{
                         break;
                     case "outputtype": OutputType = parameterVal;
                         break;
+                    case "phenotypecolumn": PhenotypeColumn = (Integer.parseInt(parameterVal)-1);
+                        break;
+                    case "readcountrenderthreshold": UtilityFunctions.getInstance().ReadCountRenderThreshold 
+                                                        =  Integer.parseInt(parameterVal);
+                        break;                                
                     default: System.err.println("Undeclared Parameter "+parameterName);
                 }
             }
@@ -277,7 +284,7 @@ public class Engine{
         JSONParser parser = new JSONParser();
 
 	try {
-		Object obj = parser.parse(new FileReader("C:\\Users\\ranasi01\\Documents\\Project\\gv15\\test.json"));
+		Object obj = parser.parse(new FileReader(TestFilePath));
 
 		JSONObject jsonObject = (JSONObject) obj;
                 tempFragments = new HashMap[jsonObject.size()];
@@ -353,6 +360,7 @@ public class Engine{
     }
     
     private void SetupDebugParameters(){
+        TestFilePath = "C:\\Users\\ranasi01\\Documents\\Project\\gv15\\test.json";
         WIDTH = 1000;
         HEIGHT = 500;
         GridStartX = 200;

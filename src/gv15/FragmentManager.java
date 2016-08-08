@@ -53,7 +53,7 @@ public class FragmentManager {
         readManager.LoadDataFromSamples(phenotypes, startCoord, endCoord,referenceManager);
         
         for(String type:phenotypes.keySet()){
-            //if(type.equals("Neg_Control")){
+            //if(type.equals("Normal")){
                 
             ArrayList<ArrayList<String>> ReferenceDataCollection = new ArrayList();
             ArrayList<Map<String,FragmentNode>[]> FragmentsCollection = new ArrayList();
