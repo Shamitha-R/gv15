@@ -35,7 +35,7 @@ public class PanelManager {
     
     public void RenderPanels(Group root,ReferenceManager referenceManager,int maxReadcount){
         for(Panel panel:enginePanels){
-            if(panel.PanelName.equals("Neg_Control"))
+            //if(panel.PanelName.equals("Neg_Control"))
                 panel.RenderPanel(root,referenceManager.GetReferenceForType(panel.PanelName),
                         maxReadcount,referenceManager.ShiftVals.get(panel.PanelName));
         }    

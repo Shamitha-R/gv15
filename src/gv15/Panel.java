@@ -247,6 +247,7 @@ public class Panel {
                     //Connect the fragments
                     if(colNum < Fragments.length){
                         for(int nextBase = 0;nextBase<5;nextBase++){
+
                             if(val.ConnectedFragments != null &&
                                     val.ConnectedFragments.containsKey(UtilityFunctions.
                             getInstance().RowNumberToBaseType(nextBase))){
@@ -258,6 +259,9 @@ public class Panel {
 
                                 for (Integer colVal : connectedColumns) {
 
+                                    if(!Fragments[colVal].containsKey(connectedVal))
+                                        System.err.println("");
+                                    
                                     if(Fragments[colVal].containsKey(connectedVal) &&
                                             (colVal-skippedFragments) < this.columns){
 

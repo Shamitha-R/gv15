@@ -61,9 +61,9 @@ public class ReferenceManager {
     }
     
     public ArrayList<String> GetReferenceForType(String targetType){
-        for(String type:ReferenceData.keySet()){
+        for(String type:AdjustedReferenceData.keySet()){
             if(type.equals(targetType))
-                return ReferenceData.get(type);
+                return AdjustedReferenceData.get(type);
         }
         
         return null;
