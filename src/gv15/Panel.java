@@ -31,10 +31,11 @@ public class Panel {
     private int rows;
     private double columnWidth;
     private double rowHeight;
+    private int renderColumns;
     private ArrayList<IFilter> panelFilters; 
     
     public Panel(String ID,double positionX,double positionY,
-        int columns,int rows,double columnWidth,double rowHeight,int flank,int xOffset){
+        int columns,int renderColumns,int rows,double columnWidth,double rowHeight,int flank,int xOffset){
         this.PanelName = ID;
         this.PositionX = positionX;
         this.PositionY = positionY;
@@ -45,6 +46,7 @@ public class Panel {
         this.Flank = flank;
         this.FragmentXOffset = xOffset;
         this.panelFilters = new ArrayList();
+        this.renderColumns = renderColumns;
     }
     
     public Map<String,FragmentNode>[] getFragments(){
@@ -58,6 +60,7 @@ public class Panel {
     public void RenderPanel(Group renderGroup,ArrayList<String> refereneceData,
             int maxReadCount,int offset){
         
+        ArrayList<String> rawReference = new ArrayList(refereneceData);
         //Exceute all the filters
         for(IFilter filter:panelFilters)
             filter.FilterPanel(refereneceData, Fragments);
@@ -71,11 +74,11 @@ public class Panel {
         
         ArrayList<Shape> renderVariance = SetupVariance(PositionX,PositionY, 
                 Flank+offset,columnWidth, rowHeight);
-        ArrayList<Shape> renderArea = SetupRenderArea((rows*2), columns, columnWidth, 
+        ArrayList<Shape> renderArea = SetupRenderArea((rows*2), renderColumns, columnWidth, 
                 rowHeight, PositionX, PositionY);        
         ArrayList<Shape> referenceRender = SetupReferenceRender(refereneceData,
-                PositionX,PositionY,rowHeight,columnWidth,columns);  
-        ArrayList<Shape> fragmentRenders = SetupFragments(refereneceData,
+                PositionX,PositionY,rowHeight,columnWidth,renderColumns);  
+        ArrayList<Shape> fragmentRenders = SetupFragments(rawReference,
                 PositionX, PositionY, rowHeight, columnWidth, maxReadCount);
         ArrayList<Shape> panelTitle = SetupPanelTitle(PanelName, 10, PositionY+10);
        
@@ -181,9 +184,11 @@ public class Panel {
         
         //Reference BasePairs
         for(int refIndex = 0;refIndex<cols;refIndex++){
-            Text tempText = new Text(startX + (colWidth*refIndex) + (colWidth/2), 
-                    startY, referenceData.get(refIndex));
-            renderTexts.add(tempText);
+            if(refIndex < referenceData.size()){
+                Text tempText = new Text(startX + (colWidth*refIndex) + (colWidth/2), 
+                        startY, referenceData.get(refIndex));
+                renderTexts.add(tempText);
+            }
         }
         
         //Read BasePair Types
@@ -206,7 +211,10 @@ public class Panel {
         int XOFFSET = FragmentXOffset;
         int YOFFSET = 4;
         int skippedFragments = 0;   
-        for(int colNum = 0;colNum<Fragments.length;colNum++){
+        for(int colNum = 0;colNum<renderColumns;colNum++){
+            
+            if(colNum >= Fragments.length)
+                break;
             
             if(Fragments[colNum].isEmpty()){
                 skippedFragments++;
@@ -218,7 +226,7 @@ public class Panel {
                 if(Fragments[colNum]!=null &&
                         Fragments[colNum].containsKey(UtilityFunctions.
                             getInstance().RowNumberToBaseType(baseType)) &&
-                        (colNum-skippedFragments) < columns){
+                        (colNum-skippedFragments) < renderColumns){
                     
                     FragmentNode val = Fragments[colNum].get(UtilityFunctions.
                             getInstance().RowNumberToBaseType(baseType));
@@ -233,8 +241,8 @@ public class Panel {
                     tempLine.setEndY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
                     tempLine.setStrokeWidth(readSize);
                     
-                    if(!referenceData.get(colNum-skippedFragments).equals("INS")){
-                        if(referenceData.get(colNum-skippedFragments).equals(UtilityFunctions.
+                    if(!referenceData.get(colNum).equals("INS")){
+                        if(referenceData.get(colNum).equals(UtilityFunctions.
                             getInstance().RowNumberToBaseType(baseType)))
                             tempLine.setStroke(Color.GAINSBORO);
                         else
@@ -259,11 +267,14 @@ public class Panel {
 
                                 for (Integer colVal : connectedColumns) {
 
+                                    if(colVal >= Fragments.length)
+                                        System.err.println("");
+                                    
                                     if(!Fragments[colVal].containsKey(connectedVal))
                                         System.err.println("");
                                     
                                     if(Fragments[colVal].containsKey(connectedVal) &&
-                                            (colVal-skippedFragments) < this.columns){
+                                            (colVal-skippedFragments) < this.renderColumns){
 
                                     int connectionEndColumn = GetConnectionEnd(colNum,colVal)-skippedFragments;    
                                     
@@ -284,11 +295,11 @@ public class Panel {
                                             connectorLine.setStartY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
                                             connectorLine.setEndY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
                                         }
-                                        if(referenceData.get(colNum-skippedFragments).equals("INS")  || 
-                                                referenceData.get(colVal-skippedFragments).equals("INS"))                                        
+                                        if(referenceData.get(colNum).equals("INS")  || 
+                                                referenceData.get(colVal).equals("INS"))                                        
                                             connectorLine.setStroke(Color.BLUEVIOLET);
                                         else{
-                                            if(referenceData.get(colVal-skippedFragments).equals(UtilityFunctions.
+                                            if(referenceData.get(colVal).equals(UtilityFunctions.
                                                     getInstance().RowNumberToBaseType(baseType)))
                                                 connectorLine.setStroke(Color.GAINSBORO);
                                             else
@@ -311,13 +322,13 @@ public class Panel {
                                             ( (connectionEndColumn) * colWidth) + gridX + XOFFSET,
                                             (nextBase * rowHeight * 2) + gridY + YOFFSET
                                         );
-                                        if(referenceData.get(colNum-skippedFragments).equals("INS") 
-                                                || referenceData.get(colVal-skippedFragments).equals("INS"))
+                                        if(referenceData.get(colNum).equals("INS") 
+                                                || referenceData.get(colVal).equals("INS"))
                                             tempCurve.setStroke(Color.BLUEVIOLET);
                                         else{
-                                            if(referenceData.get(colNum-skippedFragments).equals(UtilityFunctions.
+                                            if(referenceData.get(colNum).equals(UtilityFunctions.
                                                     getInstance().RowNumberToBaseType(baseType)) &&
-                                                    referenceData.get(colVal-skippedFragments).equals(UtilityFunctions.
+                                                    referenceData.get(colVal).equals(UtilityFunctions.
                                                     getInstance().RowNumberToBaseType(nextBase)))
                                                 tempCurve.setStroke(Color.GAINSBORO);
                                             else

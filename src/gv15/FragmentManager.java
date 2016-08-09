@@ -45,7 +45,7 @@ public class FragmentManager {
 
         //Create the Panel with Fragments using the extracted Data
         for(String type:phenotypes.keySet()){
-            //if(type.equals("Neg_Control")){
+            //if(type.equals("CIN3")){
  
                 int maxReadCountForPhenotype = -1;
                 
@@ -76,11 +76,6 @@ public class FragmentManager {
                             //Ensure that the read is within the target region
                             int baseIndex = (startCoord - (currentRead.StartPosition+1)) + columnNo; 
                             
-                            //Inserts are present in the following columns
-                            if(insertCount > 0){
-                                System.err.println("");
-                            }
-
                             if(baseIndex > 0 && baseIndex < currentRead.Length){
                                 String baseVal = readBases[baseIndex];
                                 FragmentNode tempFragNode = new FragmentNode();  
@@ -97,7 +92,9 @@ public class FragmentManager {
                                 //Get the Insert features of the current Read
                                 ArrayList<InsertFeature> insertFeatures = readManager.GetInsertsForReadAtPosition(currentRead,
                                     phenotypes.get(type).get(sampleNo).FileName,columnNo,startCoord);
-                                                                                                           
+                                
+                                //The last fragment does not have any connected fragments
+                                if(panelColumnNo < tempFrags.length-1){
                                 if(tempFrags[panelColumnNo].get(baseVal).ConnectedFragments == null)
                                     tempFrags[panelColumnNo].get(baseVal).ConnectedFragments = new HashMap();
                                 
@@ -110,8 +107,10 @@ public class FragmentManager {
                                         if(!tempFrags[panelColumnNo].get(baseVal).ConnectedFragments.containsKey(nextBaseVal))
                                             tempFrags[panelColumnNo].get(baseVal).ConnectedFragments.put(nextBaseVal, new HashSet());
 
-                                        tempFrags[panelColumnNo].get(baseVal).ConnectedFragments.get(nextBaseVal).
-                                                add(panelColumnNo+readManager.InsertionArrays.get(type)[columnNo]+1);
+                                        int connectionColumn = panelColumnNo+readManager.InsertionArrays.get(type)[columnNo]+1;
+                                        if(connectionColumn < tempFrags.length)
+                                            tempFrags[panelColumnNo].get(baseVal).ConnectedFragments.get(nextBaseVal).
+                                                add(connectionColumn);
 
                                     }                                        
                                 }else{
@@ -120,6 +119,9 @@ public class FragmentManager {
                                         String finalConnectedBase = null;
                                         if( (baseIndex+1) < currentRead.Length)
                                             finalConnectedBase = readBases[baseIndex+1];
+                                        
+                                        if(panelColumnNo == 31)
+                                            System.err.println("");
                                         
                                         AddInsertedBases(tempFrags, panelColumnNo+1, insFeature.InsertedBases,
                                                 finalConnectedBase,panelColumnNo+readManager.InsertionArrays.get(type)[columnNo]+1);
@@ -130,16 +132,18 @@ public class FragmentManager {
                                         if(!tempFrags[panelColumnNo].get(baseVal).ConnectedFragments.containsKey(nextBaseVal))
                                             tempFrags[panelColumnNo].get(baseVal).ConnectedFragments.put(nextBaseVal, new HashSet());
 
-                                        tempFrags[panelColumnNo].get(baseVal).ConnectedFragments.get(nextBaseVal).
-                                                add(panelColumnNo+1);
+                                        if( (panelColumnNo+1) < tempFrags.length)
+                                            tempFrags[panelColumnNo].get(baseVal).ConnectedFragments.get(nextBaseVal).
+                                                    add(panelColumnNo+1);
                                     }
                                 }
+                            }
                             }
                         }//End Read loop
                     }//End sample Loop
                     
-                    if(insertCount > 0)
-                        System.err.println("");
+                    //if(insertCount > 0)
+                        //System.err.println("");
                     panelColumnNo+=(insertCount+1);
                     totalInsertColumns+=insertCount;
                     
@@ -190,16 +194,17 @@ public class FragmentManager {
             
             if(fragments[index+insertIndex].get(insertedBase).ConnectedFragments == null)
                 fragments[index+insertIndex].get(insertedBase).ConnectedFragments = new HashMap();
-                                
+
             //Add the next Base as the connected Fragment
             if(insertIndex < insertedBases.size()-1){
                 String nextInsertedBase = insertedBases.get(insertIndex+1);
                                                                        
                 if(!fragments[index+insertIndex].get(insertedBase).ConnectedFragments.containsKey(nextInsertedBase))
                     fragments[index+insertIndex].get(insertedBase).ConnectedFragments.put(nextInsertedBase, new HashSet());
-
-                fragments[index+insertIndex].get(insertedBase).ConnectedFragments.get(nextInsertedBase).
-                    add(index+insertIndex+1);
+                
+                if( (index+insertIndex+1) < fragments.length )
+                    fragments[index+insertIndex].get(insertedBase).ConnectedFragments.get(nextInsertedBase).
+                        add(index+insertIndex+1);
                 
             }else if (insertIndex == insertedBases.size()-1){
                 //Add the next non-insert base as the connected fragment of the last Insert
@@ -207,8 +212,9 @@ public class FragmentManager {
                 if(!fragments[index+insertIndex].get(insertedBase).ConnectedFragments.containsKey(finalConnectedBase))
                     fragments[index+insertIndex].get(insertedBase).ConnectedFragments.put(finalConnectedBase, new HashSet());
 
-                fragments[index+insertIndex].get(insertedBase).ConnectedFragments.get(finalConnectedBase).
-                    add(finalConnectedColumn);                
+                if( finalConnectedColumn < fragments.length )
+                    fragments[index+insertIndex].get(insertedBase).ConnectedFragments.get(finalConnectedBase).
+                        add(finalConnectedColumn);                
             }
 
         }

@@ -40,7 +40,7 @@ public class ReadManager {
             int startCoordinate,int endCoordinate,ReferenceManager referenceManager,
             VariantContext currentVariant){
         for(String type:phenotypes.keySet()){
-            //if(type.equals("Neg_Control")){
+            //if(type.equals("CIN3")){
             int sampleNo = 0;
             for(Phenotype currentSample:phenotypes.get(type)){
 
@@ -103,8 +103,12 @@ public class ReadManager {
                 for(int i= 0;i<extractedFeatures.size();i++){
                     Feature currentFeature = extractedFeatures.get(i);
                     
-                    boolean filter = (currentFeature.getDataPS() > currentVariant.getStart() - 3
+                    boolean filter = false;
+                    if(UtilityFunctions.getInstance().InsertionsOnlyAtVariant)
+                        filter = (currentFeature.getDataPS() > currentVariant.getStart() - 3
                             && currentFeature.getDataPS() < currentVariant.getStart());
+                    else
+                        filter = true;
                     
                     if(currentFeature.getGFFType().equals("CIGAR-I") &&
                             currentFeature.getDataPS() >= startCoordinate-2 && 
@@ -139,7 +143,7 @@ public class ReadManager {
     
     public void CreateInsertionArrays(HashMap<String,ArrayList<Phenotype>> phenotypes,int startCoordinate){
         for(String type:phenotypes.keySet()){
-            //if(type.equals("Neg_Control")){
+            //if(type.equals("CIN3")){
                 
                 InsertionArrays.put(type, new int[loadedReferences.get(type).size()]);
                 

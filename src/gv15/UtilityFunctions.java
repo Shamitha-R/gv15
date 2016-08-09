@@ -7,6 +7,7 @@ package gv15;
 public class UtilityFunctions {
     
     public int ReadCountRenderThreshold = 50;
+    public boolean InsertionsOnlyAtVariant = true;
     
     private static UtilityFunctions instance = new UtilityFunctions();
     

@@ -63,6 +63,7 @@ public class Engine{
     public double GridStartX;
     public double GridStartY;
     public double PanelSeparation;
+    public int RenderColumns;
     public int ColumnWidth;
     public int RowHeight;
     public int FragmentXOffset;  
@@ -94,7 +95,7 @@ public class Engine{
             int count = 0;
             for(String type:phenotypes.keySet()){
                 panelManager.AddPanel(type, GridStartX, GridStartY + (PanelSeparation*count), 
-                        FLANK, ColumnWidth, RowHeight,FragmentXOffset);  
+                        FLANK, ColumnWidth, RowHeight,FragmentXOffset,RenderColumns);  
                 count++;
                 //break;
             }
@@ -233,6 +234,8 @@ public class Engine{
                         break;
                     case "panelseparation": PanelSeparation = Double.parseDouble(parameterVal);
                         break;
+                    case "columns": RenderColumns = Integer.parseInt(parameterVal);
+                        break;
                     case "columnwidth": ColumnWidth = Integer.parseInt(parameterVal);
                         break;
                     case "rowheight": RowHeight = Integer.parseInt(parameterVal);
@@ -245,7 +248,13 @@ public class Engine{
                         break;
                     case "readcountrenderthreshold": UtilityFunctions.getInstance().ReadCountRenderThreshold 
                                                         =  Integer.parseInt(parameterVal);
-                        break;                                
+                        break; 
+                    case "insertionsonlyatvariant": 
+                        if(parameterVal.equals("0"))
+                            UtilityFunctions.getInstance().InsertionsOnlyAtVariant = false;
+                        else
+                            UtilityFunctions.getInstance().InsertionsOnlyAtVariant = true;
+                        break;
                     default: System.err.println("Undeclared Parameter "+parameterName);
                 }
             }
@@ -340,7 +349,7 @@ public class Engine{
                 }                
             //Create Panel
             panelManager.AddPanel("TestPanel",GridStartX, GridStartY + (PanelSeparation), 
-                    FLANK, ColumnWidth, RowHeight,FragmentXOffset); 
+                    FLANK, ColumnWidth, RowHeight,FragmentXOffset,RenderColumns); 
             panelManager.GetPanelFromPhenotype("TestPanel").Fragments = tempFragments;
             fragmentManager.maxReadCount = maxReadCount;
 
