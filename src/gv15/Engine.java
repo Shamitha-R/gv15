@@ -82,6 +82,7 @@ public class Engine{
     HashMap<String,ArrayList<Phenotype>> phenotypes = new HashMap();
        
     public Engine(String[] args){
+        System.out.println("Starting Engine");
         if(!TESTINGPANELS){
             SetPrefsFile(args);
 
@@ -125,7 +126,7 @@ public class Engine{
     }
 
     public void Render(Stage stage){
-        
+        System.out.println("Rendering");
         if(TESTINGPANELS)
             CreateTestPanel();
         

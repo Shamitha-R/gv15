@@ -19,7 +19,7 @@ public class Gv15  extends Application {
     public static void main(String[] args) throws Exception {
         engine = new Engine(args); 
         
-        launch(args);
+        launch(args); 
     }
     
     @Override public void start(Stage stage) {
