@@ -40,7 +40,7 @@ public class ReadManager {
             int startCoordinate,int endCoordinate,ReferenceManager referenceManager,
             VariantContext currentVariant){
         for(String type:phenotypes.keySet()){
-            if(type.equals("Neg_Control")){
+            //if(type.equals("Neg_Control")){
             int sampleNo = 0;
             for(Phenotype currentSample:phenotypes.get(type)){
 
@@ -137,14 +137,14 @@ public class ReadManager {
             //TODO: Read reference only once without reloading when reading 
             //different samples
             referenceManager.AddReference(type, tabletDataHandler.getLoadedReference());
-        }//End type checking
+        //}//End type checking
             loadedReferences.put(type, tabletDataHandler.getLoadedReference());
         }      
     }
     
     public void CreateInsertionArrays(HashMap<String,ArrayList<Phenotype>> phenotypes,int startCoordinate){
         for(String type:phenotypes.keySet()){
-            if(type.equals("Neg_Control")){
+            //if(type.equals("Neg_Control")){
                 
                 InsertionArrays.put(type, new int[loadedReferences.get(type).size()]);
                 
@@ -166,7 +166,7 @@ public class ReadManager {
                         }                        
                     }
                 }
-            }//End Type Check
+            //}//End Type Check
         }
     }
     

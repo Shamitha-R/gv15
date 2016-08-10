@@ -46,7 +46,7 @@ public class FragmentManager {
 
         //Create the Panel with Fragments using the extracted Data
         for(String type:phenotypes.keySet()){
-            if(type.equals("Neg_Control")){
+            //if(type.equals("Neg_Control")){
  
                 int maxReadCountForPhenotype = -1;
                 
@@ -173,7 +173,7 @@ public class FragmentManager {
                 }
                 referenceManager.ShiftVals.put(type, addedVal);
                 
-            }//End Type Check            
+            //}//End Type Check            
         }//End Phenotype Loop
     }
     
