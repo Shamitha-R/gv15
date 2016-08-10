@@ -75,9 +75,9 @@ public class PackCreator
 			contig.setPack(pack);
 
 		long e = System.currentTimeMillis();
-		System.out.println("Packed data in " + (e-s) + "ms");
+		//System.out.println("Packed data in " + (e-s) + "ms");
 
-		System.out.println("  Total reads packed: " + addedCount);
+		//System.out.println("  Total reads packed: " + addedCount);
 	}
 
 	// This method returns one of four values:

@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class FragmentManager {
     
-    public int maxReadCount;
+    private int maxReadCount;
     private String dataPath;
     private String cachePath;
     private ReadManager readManager;
@@ -26,6 +26,7 @@ public class FragmentManager {
     public FragmentManager(String dataPath,String cachePath){
         this.dataPath = dataPath;
         this.cachePath = cachePath;
+        this.maxReadCount = 0;
     }
     
     public void ProcessFragments(HashMap<String,ArrayList<Phenotype>> phenotypes,ReferenceManager referenceManager,
@@ -45,7 +46,7 @@ public class FragmentManager {
 
         //Create the Panel with Fragments using the extracted Data
         for(String type:phenotypes.keySet()){
-            //if(type.equals("CIN3")){
+            //if(type.equals("Control")){
  
                 int maxReadCountForPhenotype = -1;
                 
@@ -57,7 +58,7 @@ public class FragmentManager {
                 int totalInsertColumns = 0;
                 int panelColumnNo = 0;
                 for(int columnNo = 0;columnNo<readManager.InsertionArrays.get(type).length;columnNo++){
-                       
+
                     int insertCount = readManager.InsertionArrays.get(type)[columnNo];
                     int readCountForColumn = 0;
                     //Loop through all the samples for the phenotype
@@ -75,8 +76,8 @@ public class FragmentManager {
                             String[] readBases = currentRead.BaseValues;
                             //Ensure that the read is within the target region
                             int baseIndex = (startCoord - (currentRead.StartPosition+1)) + columnNo; 
-                            
-                            if(baseIndex > 0 && baseIndex < currentRead.Length){
+
+                            if(baseIndex >= 0 && baseIndex < currentRead.Length){
                                 String baseVal = readBases[baseIndex];
                                 FragmentNode tempFragNode = new FragmentNode();  
                                     
@@ -88,7 +89,7 @@ public class FragmentManager {
                                     
                                 //Increment the Read Count
                                 tempFrags[panelColumnNo].get(baseVal).ReadCount++;
-                                    
+
                                 //Get the Insert features of the current Read
                                 ArrayList<InsertFeature> insertFeatures = readManager.GetInsertsForReadAtPosition(currentRead,
                                     phenotypes.get(type).get(sampleNo).FileName,columnNo,startCoord);
@@ -97,6 +98,7 @@ public class FragmentManager {
                                 if(panelColumnNo < tempFrags.length-1){
                                 if(tempFrags[panelColumnNo].get(baseVal).ConnectedFragments == null)
                                     tempFrags[panelColumnNo].get(baseVal).ConnectedFragments = new HashMap();
+                               
                                 
                                 //No inserts for this read therefore connect directly with the next Base
                                 if(insertFeatures.isEmpty()){
@@ -119,8 +121,8 @@ public class FragmentManager {
                                         String finalConnectedBase = null;
                                         if( (baseIndex+1) < currentRead.Length)
                                             finalConnectedBase = readBases[baseIndex+1];
-                                        
-                                        if(panelColumnNo == 31)
+
+                                        if(insFeature.InsertedBases.size() == 6)
                                             System.err.println("");
                                         
                                         AddInsertedBases(tempFrags, panelColumnNo+1, insFeature.InsertedBases,
@@ -157,6 +159,7 @@ public class FragmentManager {
                 
                 //Add the fragments to the panel fragments
                 panelManager.GetPanelFromPhenotype(type).Fragments = tempFrags;
+                panelManager.MaxReadCount = maxReadCount;
                
                 //Adjust for insertions
                 int adjustedPos = 0;
@@ -220,10 +223,6 @@ public class FragmentManager {
         }
                   
     }    
-
-    public int getMaxReadCount(){
-        return maxReadCount;
-    }
 
     public void FragmentPrinter(Map<String,FragmentNode>[] fragments){
         System.out.println("Printing Fragments\n");

@@ -40,7 +40,7 @@ public class ReadManager {
             int startCoordinate,int endCoordinate,ReferenceManager referenceManager,
             VariantContext currentVariant){
         for(String type:phenotypes.keySet()){
-            //if(type.equals("CIN3")){
+            //if(type.equals("Control")){
             int sampleNo = 0;
             for(Phenotype currentSample:phenotypes.get(type)){
 
@@ -52,8 +52,9 @@ public class ReadManager {
 
                 //Call the Tablet library to load the sample data
                 try {
+                    int contigNumber = (Integer.parseInt(currentVariant.getContig().substring(3))-1);
                     tabletDataHandler.ExtractDataAtCoordinates(fileNames, startCoordinate, endCoordinate, 
-                            0,currentSample.FileName);
+                            contigNumber,currentSample.FileName);
                 } catch (Exception ex) {
                     Logger.getLogger(ReadManager.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -143,7 +144,7 @@ public class ReadManager {
     
     public void CreateInsertionArrays(HashMap<String,ArrayList<Phenotype>> phenotypes,int startCoordinate){
         for(String type:phenotypes.keySet()){
-            //if(type.equals("CIN3")){
+            //if(type.equals("Control")){
                 
                 InsertionArrays.put(type, new int[loadedReferences.get(type).size()]);
                 
@@ -155,6 +156,10 @@ public class ReadManager {
                             int insertedPos = (feature.StartCoodinate+1) - startCoordinate;
                             
                             if(insertedPos>-1){
+                                
+                                if(feature.InsertedBases.size() == 6)
+                                    System.err.println("");
+                                
                                 if(InsertionArrays.get(type)[insertedPos] < feature.InsertedBases.size())
                                     InsertionArrays.get(type)[insertedPos] = feature.InsertedBases.size();
                             }

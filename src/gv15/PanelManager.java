@@ -16,10 +16,12 @@ import javafx.scene.Group;
  */
 public class PanelManager {
     
-    ArrayList<Panel> enginePanels;
+    private ArrayList<Panel> enginePanels;
+    public int MaxReadCount;
     
     public PanelManager(){
         enginePanels = new ArrayList();
+        MaxReadCount = 0;
     }
     
     public void AddPanel(String panelName,double startX,double startY,int flank,
@@ -33,11 +35,11 @@ public class PanelManager {
         enginePanels.add(tempPanel);      
     }
     
-    public void RenderPanels(Group root,ReferenceManager referenceManager,int maxReadcount){
+    public void RenderPanels(Group root,ReferenceManager referenceManager){
         for(Panel panel:enginePanels){
-            //if(panel.PanelName.equals("CIN3"))
+            //if(panel.PanelName.equals("Control"))
                 panel.RenderPanel(root,referenceManager.GetReferenceForType(panel.PanelName),
-                        maxReadcount,referenceManager.ShiftVals.get(panel.PanelName));
+                        MaxReadCount,referenceManager.ShiftVals.get(panel.PanelName));
         }    
     }
     

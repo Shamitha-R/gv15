@@ -74,10 +74,10 @@ public class Engine{
     
     //Components
     DataManager dataManager;
-    PanelManager panelManager;
+    PanelManager panelManager[];
     VariantManager variantManager;
     FragmentManager fragmentManager;
-    ReferenceManager referenceManager;
+    ReferenceManager referenceManager[];
     TabletDataHandler tabletDataHandler;
     HashMap<String,ArrayList<Phenotype>> phenotypes = new HashMap();
        
@@ -89,28 +89,38 @@ public class Engine{
             dataManager = new DataManager(DataPath,VariantPath,PhenotypePath,PhenotypeColumn);
             dataManager.ImportPhenotypes(phenotypes);
 
-            //Setup Panels
-            panelManager = new PanelManager();
-            referenceManager = new ReferenceManager(ReferencePath);
-            int count = 0;
-            for(String type:phenotypes.keySet()){
-                panelManager.AddPanel(type, GridStartX, GridStartY + (PanelSeparation*count), 
-                        FLANK, ColumnWidth, RowHeight,FragmentXOffset,RenderColumns);  
-                count++;
-                //break;
-            }
-
             //Setup Variants
-            variantManager = new VariantManager(dataManager.ImportVCFFile());       
-            //Setup Fragments
+            variantManager = new VariantManager(dataManager.ImportVCFFile());     
 
-            fragmentManager = new FragmentManager(DataPath,CachePath);
-            try {
-                fragmentManager.ProcessFragments(phenotypes,referenceManager,
-                        panelManager,FLANK,variantManager.getSelectedVariant());
-            } catch (Exception ex) {
-                Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+            panelManager = new PanelManager[variantManager.TotalVariantCount];
+            referenceManager = new ReferenceManager[variantManager.TotalVariantCount];
+            
+            //Loop through all the Variants
+            for(int i = 0;i < variantManager.TotalVariantCount;i++){
+                
+                variantManager.setVariant(i);
+                System.out.println("Processing variant "+variantManager.getSelectedVariant().getStart());
+                
+                //Setup Panels
+                panelManager[i] = new PanelManager();
+                referenceManager[i] = new ReferenceManager(ReferencePath);
+                int count = 0;
+                for(String type:phenotypes.keySet()){
+                    panelManager[i].AddPanel(type, GridStartX, GridStartY + (PanelSeparation*count), 
+                            FLANK, ColumnWidth, RowHeight,FragmentXOffset,RenderColumns);  
+                    count++;
+                }
+
+                //Setup Fragments
+                fragmentManager = new FragmentManager(DataPath,CachePath);
+                try {
+                    fragmentManager.ProcessFragments(phenotypes,referenceManager[i],
+                            panelManager[i],FLANK,variantManager.getSelectedVariant());
+                } catch (Exception ex) {
+                    Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+                }                
             }
+
         }
     }
 
@@ -119,40 +129,46 @@ public class Engine{
         if(TESTINGPANELS)
             CreateTestPanel();
         
-        Group root = new Group();
+        //Render for all Variants
+        for(int i = 0;i<variantManager.TotalVariantCount;i++){
         
-        panelManager.RenderPanels(root,referenceManager,
-                fragmentManager.getMaxReadCount());
-        
-        if(!TESTINGPANELS)
-            root.getChildren().add(SetupChartTitle(5, 25));
-        
-        Scene scene = new Scene(
-                root,
-                WIDTH, HEIGHT,
-                Color.rgb(255,255,255)
-        );
+            variantManager.setVariant(i);
+            Group root = new Group();
 
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.show();
-        
-        OutputResultsToImage(scene);
+            panelManager[i].RenderPanels(root,referenceManager[i]);
+
+            if(!TESTINGPANELS)
+                root.getChildren().add(SetupChartTitle(5, 25));
+
+            Scene scene = new Scene(
+                    root,
+                    WIDTH, HEIGHT,
+                    Color.rgb(255,255,255)
+            );
+
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+
+            OutputResultsToImage(scene);            
+        }
+
         //stage.setMaximized(true);        
     }
     
     private void OutputResultsToImage(Scene scene){
-        WritableImage snapshot = scene.snapshot(null);
+        WritableImage snapshot = scene.snapshot(null);   
+        String fileName = Integer.toString(variantManager.getSelectedVariant().getStart()); 
         if(OutputType.equals("png")){
             BufferedImage tempImg = SwingFXUtils.fromFXImage(snapshot, null);
-            File outputfile = new File(OutputPath+"results.png");
+            File outputfile = new File(OutputPath+fileName+"_results.png");
             try{
                 ImageIO.write(tempImg, "png", outputfile);
             }catch(Exception e){
 
             }
         }else if(OutputType.equals("jpeg")){
-           File fa = new File(OutputPath+"results.jpg");
+           File fa = new File(OutputPath+fileName+"_results.jpg");
            RenderedImage renderedImage = SwingFXUtils.fromFXImage(snapshot, null);
            BufferedImage image2 = new BufferedImage((int)WIDTH, (int)HEIGHT, BufferedImage.TYPE_INT_RGB); 
            image2.setData(renderedImage.getData());
@@ -282,8 +298,8 @@ public class Engine{
         
         SetupDebugParameters();
         
-        referenceManager = new ReferenceManager(ReferencePath);
-        panelManager = new PanelManager();
+        referenceManager[0] = new ReferenceManager(ReferencePath);
+        panelManager[0] = new PanelManager();
         fragmentManager = new FragmentManager(DataPath, CachePath);
         String[] refData;
         Map<String,FragmentNode>[] tempFragments;
@@ -348,15 +364,15 @@ public class Engine{
                         maxReadCount = currentReadCount;
                 }                
             //Create Panel
-            panelManager.AddPanel("TestPanel",GridStartX, GridStartY + (PanelSeparation), 
+            panelManager[0].AddPanel("TestPanel",GridStartX, GridStartY + (PanelSeparation), 
                     FLANK, ColumnWidth, RowHeight,FragmentXOffset,RenderColumns); 
-            panelManager.GetPanelFromPhenotype("TestPanel").Fragments = tempFragments;
-            fragmentManager.maxReadCount = maxReadCount;
+            panelManager[0].GetPanelFromPhenotype("TestPanel").Fragments = tempFragments;
+            panelManager[0].MaxReadCount = maxReadCount;
 
             //Add to reference Data
-            referenceManager.AddReference("TestPanel", new ArrayList<String>(Arrays.asList(refData)));
-            referenceManager.ShiftVals = new HashMap();
-            referenceManager.ShiftVals.put("TestPanel", 0);
+            referenceManager[0].AddReference("TestPanel", new ArrayList<String>(Arrays.asList(refData)));
+            referenceManager[0].ShiftVals = new HashMap();
+            referenceManager[0].ShiftVals.put("TestPanel", 0);
             
 	} catch (FileNotFoundException e) {
 		e.printStackTrace();

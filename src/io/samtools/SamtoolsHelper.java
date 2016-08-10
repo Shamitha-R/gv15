@@ -33,7 +33,7 @@ public class SamtoolsHelper
 		{
 			File samtools = extractSamtools(cacheID);
 
-			System.out.println("Running IDXSTATS on " + baiFile.getPath());
+			//System.out.println("Running IDXSTATS on " + baiFile.getPath());
 
 			ProcessBuilder pb = new ProcessBuilder(samtools.getPath(),
 				"idxstats", bamFile.getPath());
@@ -170,7 +170,7 @@ public class SamtoolsHelper
 		samtools.deleteOnExit();
 
 		long e = System.currentTimeMillis();
-		System.out.println("Samtools extracted in " + (e-s) + "ms");
+		//System.out.println("Samtools extracted in " + (e-s) + "ms");
 
 		return samtools;
 	}

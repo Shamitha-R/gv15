@@ -12,18 +12,23 @@ public class VariantManager {
     private VariantContext selectedVariant;
     private ArrayList<VariantContext> variants;
     
+    public int TotalVariantCount = 0;
+    
     public VariantManager(File vcfFile){
         variants = new ArrayList();
         VCFFileReader reader = new VCFFileReader(vcfFile, false);
-        
-        for(VariantContext context:reader.iterator().toList()){
+
+        for(VariantContext context:reader.iterator().toList()){ 
             variants.add(context);
+            TotalVariantCount++;
         }
-        
-        selectedVariant = variants.get(0);
     }
     
     public VariantContext getSelectedVariant(){
         return selectedVariant;
+    }
+    
+    public void setVariant(int index){
+        selectedVariant = variants.get(index);
     }
 }

@@ -67,7 +67,7 @@ public class BamFileHandler
 			throw new Exception(ex.toString() + "\n\n"
 				+ RB.getString("io.BamFileHandler.bamError"), ex);
 		}
-		System.out.println("Loaded in: " + (System.currentTimeMillis()-start));
+		//System.out.println("Loaded in: " + (System.currentTimeMillis()-start));
 	}
 
 	public void loadData(Contig contig, int s, int e)
