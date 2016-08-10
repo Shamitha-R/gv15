@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="gv15.jar" size="140618" download="eager" />
+    <jar href="gv15.jar" size="141044" download="eager" />
     <jar href="lib\flamingo.jar" size="570193" download="eager" />
     <jar href="lib\fxgraphics2d-1.3-demo.jar" size="655044" download="eager" />
     <jar href="lib\fxgraphics2d-1.3.jar" size="17072" download="eager" />

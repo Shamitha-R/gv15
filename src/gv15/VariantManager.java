@@ -17,10 +17,13 @@ public class VariantManager {
     public VariantManager(File vcfFile){
         variants = new ArrayList();
         VCFFileReader reader = new VCFFileReader(vcfFile, false);
-
+        int test = 0;
         for(VariantContext context:reader.iterator().toList()){ 
+            if(test==0){
             variants.add(context);
             TotalVariantCount++;
+            }
+            test++;
         }
     }
     

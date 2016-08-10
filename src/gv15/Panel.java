@@ -1,10 +1,18 @@
 package gv15;
 
+import com.sun.javafx.geom.BaseBounds;
+import com.sun.javafx.geom.transform.BaseTransform;
+import com.sun.javafx.jmx.MXNodeAlgorithm;
+import com.sun.javafx.jmx.MXNodeAlgorithmContext;
+import com.sun.javafx.sg.prism.NGNode;
 import gv15.Filters.IFilter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.CubicCurveTo;
@@ -78,7 +86,7 @@ public class Panel {
                 rowHeight, PositionX, PositionY);        
         ArrayList<Shape> referenceRender = SetupReferenceRender(refereneceData,
                 PositionX,PositionY,rowHeight,columnWidth,renderColumns);  
-        ArrayList<Shape> fragmentRenders = SetupFragments(rawReference,
+        ArrayList<Node> fragmentRenders = SetupFragments(rawReference,
                 PositionX, PositionY, rowHeight, columnWidth, maxReadCount);
         ArrayList<Shape> panelTitle = SetupPanelTitle(PanelName, 10, PositionY+10);
        
@@ -203,10 +211,10 @@ public class Panel {
         return renderTexts;
     }
 
-    private ArrayList<Shape> SetupFragments(ArrayList<String> referenceData,
+    private ArrayList<Node> SetupFragments(ArrayList<String> referenceData,
             double gridX, double gridY, double rowHeight, 
             double colWidth,int maxReadCount){
-        ArrayList<Shape> renderElements = new ArrayList<>();
+        ArrayList<Node> renderElements = new ArrayList<>();
         
         int XOFFSET = FragmentXOffset;
         int YOFFSET = 4;
@@ -377,13 +385,17 @@ public class Panel {
                             }
                         }
                     }
-                    
+
                     //Add Read count render
-                    Text tempText = new Text(( (colNum-skippedFragments) * colWidth) + gridX + XOFFSET + (readSize/2) + FragmentXOffset - 5,
-                            (baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2) + 5,
-                            Integer.toString(val.ReadCount ));
-                    renderElements.add(tempText);                    
-                    
+                    Text tempText = new Text(0,0,Integer.toString(val.ReadCount ));
+                    double width = tempText.getLayoutBounds().getWidth();
+                    VBox textBox = new VBox();
+                    textBox.getChildren().addAll(tempText);
+                    textBox.setAlignment(Pos.BASELINE_CENTER);
+                    textBox.setLayoutX(( (colNum-skippedFragments) * colWidth) + gridX + (colWidth/2) - (width/2));
+                    textBox.setLayoutY((baseType * rowHeight * 2) + gridY + YOFFSET + (readSize/2));
+                    renderElements.add(textBox);  
+
                 }
             }
         }
