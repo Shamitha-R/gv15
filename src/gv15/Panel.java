@@ -252,11 +252,11 @@ public class Panel {
                     if(!referenceData.get(colNum).equals("INS")){
                         if(referenceData.get(colNum).equals(UtilityFunctions.
                             getInstance().RowNumberToBaseType(baseType)))
-                            tempLine.setStroke(Color.GAINSBORO);
+                            tempLine.setStroke(Color.web(UtilityFunctions.getInstance().ReadColour_Unvaried));
                         else
-                            tempLine.setStroke(Color.ORANGE);
+                            tempLine.setStroke(Color.web(UtilityFunctions.getInstance().ReadColour_Varied));
                     }else
-                        tempLine.setStroke(Color.BLUEVIOLET);
+                        tempLine.setStroke(Color.web(UtilityFunctions.getInstance().ReadColour_Insertion));
                     
                     renderElements.add(tempLine); 
 
@@ -305,13 +305,13 @@ public class Panel {
                                         }
                                         if(referenceData.get(colNum).equals("INS")  || 
                                                 referenceData.get(colVal).equals("INS"))                                        
-                                            connectorLine.setStroke(Color.BLUEVIOLET);
+                                            connectorLine.setStroke(Color.web(UtilityFunctions.getInstance().ReadColour_Insertion));
                                         else{
                                             if(referenceData.get(colVal).equals(UtilityFunctions.
                                                     getInstance().RowNumberToBaseType(baseType)))
-                                                connectorLine.setStroke(Color.GAINSBORO);
+                                                connectorLine.setStroke(Color.web(UtilityFunctions.getInstance().ReadColour_Unvaried));
                                             else
-                                                connectorLine.setStroke(Color.ORANGE);
+                                                connectorLine.setStroke(Color.web(UtilityFunctions.getInstance().ReadColour_Varied));
                                         }
 
                                         renderElements.add(connectorLine);  
@@ -332,15 +332,15 @@ public class Panel {
                                         );
                                         if(referenceData.get(colNum).equals("INS") 
                                                 || referenceData.get(colVal).equals("INS"))
-                                            tempCurve.setStroke(Color.BLUEVIOLET);
+                                            tempCurve.setStroke(Color.web(UtilityFunctions.getInstance().ReadColour_Insertion));
                                         else{
                                             if(referenceData.get(colNum).equals(UtilityFunctions.
                                                     getInstance().RowNumberToBaseType(baseType)) &&
                                                     referenceData.get(colVal).equals(UtilityFunctions.
                                                     getInstance().RowNumberToBaseType(nextBase)))
-                                                tempCurve.setStroke(Color.GAINSBORO);
+                                                tempCurve.setStroke(Color.web(UtilityFunctions.getInstance().ReadColour_Unvaried));
                                             else
-                                                tempCurve.setStroke(Color.ORANGE);
+                                                tempCurve.setStroke(Color.web(UtilityFunctions.getInstance().ReadColour_Varied));
                                         }
                                         tempCurve.setFill(null);
                                         renderElements.add(tempCurve);      

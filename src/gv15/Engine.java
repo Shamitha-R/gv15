@@ -272,6 +272,12 @@ public class Engine{
                         else
                             UtilityFunctions.getInstance().InsertionsOnlyAtVariant = true;
                         break;
+                    case "readcolour_unvaried": UtilityFunctions.getInstance().ReadColour_Unvaried = parameterVal;
+                        break;
+                    case "readcolour_varied": UtilityFunctions.getInstance().ReadColour_Varied = parameterVal;
+                        break;          
+                    case "readcolour_insertion": UtilityFunctions.getInstance().ReadColour_Insertion = parameterVal;
+                        break;
                     default: System.err.println("Undeclared Parameter "+parameterName);
                 }
             }

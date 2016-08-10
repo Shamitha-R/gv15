@@ -1,13 +1,18 @@
 package gv15;
 
+import javafx.scene.paint.Color;
+
 /**
  *
  * @author ranasi01
  */
 public class UtilityFunctions {
     
-    public int ReadCountRenderThreshold = 50;
+    public int ReadCountRenderThreshold = 0;
     public boolean InsertionsOnlyAtVariant = true;
+    public String ReadColour_Unvaried;
+    public String ReadColour_Varied;
+    public String ReadColour_Insertion;
     
     private static UtilityFunctions instance = new UtilityFunctions();
     

@@ -18,3 +18,6 @@ outputtype=png
 phenotypecolumn=4
 readcountrenderthreshold=0
 insertionsonlyatvariant=0
+readcolour_unvaried=#DCDCDC
+readcolour_varied=#FFA500
+readcolour_insertion=#8A2BE2
