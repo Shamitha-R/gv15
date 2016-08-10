@@ -1,5 +1,6 @@
 package gv15;
 
+import io.CigarParser;
 import javafx.scene.paint.Color;
 
 /**
@@ -13,6 +14,8 @@ public class UtilityFunctions {
     public String ReadColour_Unvaried;
     public String ReadColour_Varied;
     public String ReadColour_Insertion;
+    
+    public CigarParser CigarParser = null;
     
     private static UtilityFunctions instance = new UtilityFunctions();
     

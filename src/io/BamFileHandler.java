@@ -9,6 +9,7 @@ import analysis.*;
 import data.cache.*;
 import data.*;
 import data.auxiliary.*;
+import gv15.UtilityFunctions;
 //import gui.*;
 import io.samtools.*;
 
@@ -87,9 +88,16 @@ public class BamFileHandler
 		readCache.openForWriting();
 		nameCache.openForWriting();
 
-		parser = new CigarParser(contig);
-		featureParser = new CigarFeatureParser(contig);
+                //Load consensus if no cache
+                if(UtilityFunctions.getInstance().CigarParser == null){
+                    parser = new CigarParser(contig);
+                    UtilityFunctions.getInstance().CigarParser = parser;
+                    
+                }else
+                    parser = UtilityFunctions.getInstance().CigarParser;
 
+                
+		featureParser = new CigarFeatureParser(contig);
 		contig.clearContigData(true);
 
 		SAMRecordIterator itor = bamReader.query(contig.getName(), s+1, e+1, false);

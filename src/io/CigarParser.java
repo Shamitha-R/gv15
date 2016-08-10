@@ -12,7 +12,7 @@ import io.Cigar.*;
 public class CigarParser
 {
 	private static final char SKIPPED_BASE = 'N';
-	private static final char DELETED_BASE = '*';
+	private static final char DELETED_BASE = '*'; 
 
 	// We allow loading of assemblys without references so this can't be final
 	private String consensus;
@@ -21,13 +21,14 @@ public class CigarParser
 	 * Takes the contig currently being parsed. This is used to obtain the consensus
 	 * which is required to build up read strings where the SEQ field of the read
 	 * in the BAM file contains '=' characters and when the SEQ field == *.
+     * @param contig
 	 */
 	public CigarParser(Contig contig)
 	{
-		// Get sequence forces the reference to be loaded from disk cache
-		contig.getConsensus().getSequence();
-		if (contig.getConsensus() != null)
-			this.consensus = contig.getConsensus().toString();
+            // Get sequence forces the reference to be loaded from disk cache
+            contig.getConsensus().getSequence();
+            if (contig.getConsensus() != null)
+		this.consensus = contig.getConsensus().toString();     
 	}
 
 	public String parse(String bases, int position, String cigarString, Read read)
