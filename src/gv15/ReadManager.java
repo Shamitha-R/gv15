@@ -41,6 +41,7 @@ public class ReadManager {
             VariantContext currentVariant){
         for(String type:phenotypes.keySet()){
             //if(type.equals("Neg_Control")){
+            ArrayList<Phenotype> unhandledSamples = new ArrayList();
             int sampleNo = 0;
             for(Phenotype currentSample:phenotypes.get(type)){
 
@@ -56,7 +57,10 @@ public class ReadManager {
                     tabletDataHandler.ExtractDataAtCoordinates(fileNames, startCoordinate, endCoordinate, 
                             contigNumber,currentSample.FileName);
                 } catch (Exception ex) {
-                    Logger.getLogger(ReadManager.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("Error Reading Sample "+currentSample.FileName+". Sample Skipped.");
+                    unhandledSamples.add(currentSample);
+                    sampleNo++;
+                    continue;
                 }
                 
                 //Add the samples and its reads to the collection
@@ -139,7 +143,15 @@ public class ReadManager {
             referenceManager.AddReference(type, tabletDataHandler.getLoadedReference());
         //}//End type checking
             loadedReferences.put(type, tabletDataHandler.getLoadedReference());
-        }      
+            
+                    
+            //Remove Samples which failed to load
+            for(Phenotype pheno:unhandledSamples){
+                phenotypes.get(type).remove(pheno);
+            }
+                
+        }
+
     }
     
     public void CreateInsertionArrays(HashMap<String,ArrayList<Phenotype>> phenotypes,int startCoordinate){

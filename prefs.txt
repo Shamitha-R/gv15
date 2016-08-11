@@ -1,6 +1,6 @@
-datapath=C:\Users\ranasi01\Documents\Project\Data\samples\
+datapath=C:\Users\ranasi01\Documents\Project\Data\test_data\samples\
 referencepath=C:\Users\ranasi01\Documents\Project\Data\ref.fasta
-variantpath=C:\Users\ranasi01\Documents\Project\Data\variants.vcf
+variantpath=C:\Users\ranasi01\Documents\Project\Data\test_data\new_test_variants.vcf
 phenotypepath=C:\Users\ranasi01\Documents\Project\Data\phenotype.csv
 cachepath=D:\
 outputpath=D:\

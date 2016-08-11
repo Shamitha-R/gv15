@@ -266,10 +266,10 @@ public class Engine{
     }
     
     private void OutputResultsToImage(Scene scene){
-        System.out.println("Writing Output images to Disk");
         WritableImage snapshot = scene.snapshot(null);   
         String fileName = variantManager.getSelectedVariant().getContig() + "_" + 
                 Integer.toString(variantManager.getSelectedVariant().getStart()); 
+        System.out.println("Writing Output images to Disk "+OutputPath+fileName+"_results.png");
         if(OutputType.equals("png")){
             BufferedImage tempImg = SwingFXUtils.fromFXImage(snapshot, null);
             File outputfile = new File(OutputPath+fileName+"_results.png");
