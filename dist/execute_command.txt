@@ -1,3 +1,0 @@
-java -jar gv15.jar -path=C:\Users\ranasi01\Documents\Project\gv15\
-
-java -jar gv15.jar -datapath=C:\Users\ranasi01\Documents\Project\Data\samples\ -referencepath=C:\Users\ranasi01\Documents\Project\Data\ref.fasta -variantpath=C:\Users\ranasi01\Documents\Project\Data\variants.vcf -phenotypepath=C:\Users\ranasi01\Documents\Project\Data\phenotype.csv -cachepath=D:\ -outputpath=D:\ -width=1900 -height=960 -flank=7 -gridstartx=200 -gridstarty=100 -panelseparation=215 -columns=37 -columnwidth=45 -rowheight=18 -fragmentxoffset=15 -outputtype=png -phenotypecolumn=4 -readcountrenderthreshold=0 -insertionsonlyatvariant=0 -readcolour_unvaried=#DCDCDC -readcolour_varied=#FFA500 -readcolour_insertion=#8A2BE2 

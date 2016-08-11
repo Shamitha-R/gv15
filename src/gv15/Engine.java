@@ -155,6 +155,7 @@ public class Engine{
             OutputResultsToImage(scene);            
         }
 
+        System.out.println("Application Terminating");
         System.exit(0);
         //stage.setMaximized(true);        
     }
@@ -265,6 +266,7 @@ public class Engine{
     }
     
     private void OutputResultsToImage(Scene scene){
+        System.out.println("Writing Output images to Disk");
         WritableImage snapshot = scene.snapshot(null);   
         String fileName = variantManager.getSelectedVariant().getContig() + "_" + 
                 Integer.toString(variantManager.getSelectedVariant().getStart()); 
@@ -393,7 +395,7 @@ public class Engine{
 	} 
                
 	// Ensure the .scri-bioinf folder exists
-	File fldr = new File(filePath, ".scri-bioinf");
+	File fldr = new File(".scri-bioinf");
 	fldr.mkdirs();  
 
 	// Cached reference file

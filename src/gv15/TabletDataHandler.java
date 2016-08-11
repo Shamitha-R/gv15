@@ -34,6 +34,7 @@ public class TabletDataHandler {
     public void ExtractDataAtCoordinates(String[] fileNames,int startCoordinate,
             int endCoordinate,int contigNumber,String sampleName) throws Exception{
         
+        System.out.println("Reading sample "+sampleName);
         TabletFile tabletFile;
         tabletFile = TabletFileHandler.createFromFileList(fileNames);
         

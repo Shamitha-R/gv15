@@ -170,8 +170,8 @@ public class AssemblyFile implements Comparable<AssemblyFile>
 	{
 		InputStream is = getInputStream();
 
-		System.out.println();
-		System.out.println("testing " + file);
+		//System.out.println();
+		//System.out.println("Reading " + file);
 
 		try
 		{

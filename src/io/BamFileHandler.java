@@ -90,9 +90,9 @@ public class BamFileHandler
 
                 //Load consensus if no cache
                 if(UtilityFunctions.getInstance().CigarParser == null){
+                    System.out.println("Reading Reference File");
                     parser = new CigarParser(contig);
                     UtilityFunctions.getInstance().CigarParser = parser;
-                    
                 }else
                     parser = UtilityFunctions.getInstance().CigarParser;
 
