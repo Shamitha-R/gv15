@@ -82,9 +82,10 @@ public class Engine{
     HashMap<String,ArrayList<Phenotype>> phenotypes = new HashMap();
        
     public Engine(String[] args){
-        System.out.println("Starting Engine");
         if(!TESTINGPANELS){
-            SetPrefsFile(args);
+            ParseArguments(args);
+            
+            System.out.println("Starting Engine");
 
             //Setup Import Utils
             dataManager = new DataManager(DataPath,VariantPath,PhenotypePath,PhenotypeColumn);
@@ -149,12 +150,118 @@ public class Engine{
 
             stage.setScene(scene);
             stage.setResizable(false);
-            stage.show();
+            //stage.show();
 
             OutputResultsToImage(scene);            
         }
 
+        System.exit(0);
         //stage.setMaximized(true);        
+    }
+    
+    private void ParseArguments(String[] args){
+        SetupDefaultParameters();
+      
+        //No arguments entered therefore show OPTIONS and exit
+        if(args.length == 0){
+            System.out.println(UtilityFunctions.getInstance().AppOptions.OptionsList);
+            System.exit(0);
+        }
+
+        for(int argNum = 0;argNum<args.length;argNum++){
+            int endIndex = args[argNum].indexOf("=");
+            int startIndex = args[argNum].indexOf("-");
+
+            String argType = args[argNum].substring(startIndex+1,endIndex);
+            String parameterVal = args[argNum].substring(endIndex+1);
+            
+            //If a prefs path is provided extract settings from the target file
+            if(argType.equals("path") || argType.equals("-path")){
+                SetPrefsFile(parameterVal);
+                break;
+            }
+            
+            //Handle options
+            if(argType.equals("datapath") || argType.equals("-datapath"))
+                DataPath = parameterVal;
+            else if(argType.equals("referencepath") || argType.equals("-referencepath"))
+                ReferencePath = parameterVal;
+            else if(argType.equals("variantpath") || argType.equals("-variantpath"))
+                VariantPath = parameterVal;  
+            else if(argType.equals("phenotypepath") || argType.equals("-phenotypepath"))
+                PhenotypePath = parameterVal;    
+            else if(argType.equals("cachepath") || argType.equals("-cachepath"))
+                CachePath = parameterVal;
+            else if(argType.equals("outputpath") || argType.equals("-outputpath"))
+                OutputPath = parameterVal;
+            else if(argType.equals("width") || argType.equals("-width"))
+                WIDTH = Double.parseDouble(parameterVal);
+            else if(argType.equals("height") || argType.equals("-height"))
+                HEIGHT = Double.parseDouble(parameterVal);
+            else if(argType.equals("flank") || argType.equals("-flank"))
+                FLANK = Integer.parseInt(parameterVal); 
+            else if(argType.equals("gridstartx") || argType.equals("-gridstartx"))
+                GridStartX = Double.parseDouble(parameterVal);
+            else if(argType.equals("gridstarty") || argType.equals("-gridstarty"))
+                GridStartY = Double.parseDouble(parameterVal);
+            else if(argType.equals("panelseparation") || argType.equals("-panelseparation"))
+                PanelSeparation = Double.parseDouble(parameterVal);
+            else if(argType.equals("columns") || argType.equals("-columns"))
+                RenderColumns = Integer.parseInt(parameterVal);
+            else if(argType.equals("columnwidth") || argType.equals("-columnwidth"))
+                ColumnWidth = Integer.parseInt(parameterVal);
+            else if(argType.equals("rowheight") || argType.equals("-rowheight"))
+                RowHeight = Integer.parseInt(parameterVal);
+            else if(argType.equals("fragmentxoffset") || argType.equals("-fragmentxoffset"))
+                FragmentXOffset = Integer.parseInt(parameterVal);
+            else if(argType.equals("outputtype") || argType.equals("-outputtype"))
+                OutputType = parameterVal;
+            else if(argType.equals("phenotypecolumn") || argType.equals("-phenotypecolumn"))
+                PhenotypeColumn = (Integer.parseInt(parameterVal)-1);
+            else if(argType.equals("readcountrenderthreshold") || argType.equals("-readcountrenderthreshold"))
+                UtilityFunctions.getInstance().ReadCountRenderThreshold 
+                                                        =  Integer.parseInt(parameterVal);
+            else if(argType.equals("insertionsonlyatvariant") || argType.equals("-insertionsonlyatvariant")){
+                if(parameterVal.equals("0"))
+                    UtilityFunctions.getInstance().InsertionsOnlyAtVariant = false;
+                else
+                    UtilityFunctions.getInstance().InsertionsOnlyAtVariant = true;
+            }
+            else if(argType.equals("readcolour_unvaried") || argType.equals("-readcolour_unvaried"))
+                UtilityFunctions.getInstance().ReadColour_Unvaried = parameterVal;
+            else if(argType.equals("readcolour_varied") || argType.equals("-readcolour_varied"))
+                UtilityFunctions.getInstance().ReadColour_Varied = parameterVal;
+            else if(argType.equals("readcolour_insertion") || argType.equals("-readcolour_insertion"))
+                UtilityFunctions.getInstance().ReadColour_Insertion = parameterVal;
+        }
+        
+        // Ensure the .scri-bioinf folder exists
+	File fldr = new File(".scri-bioinf");
+	fldr.mkdirs();  
+
+	// Cached reference file
+	ConsensusFileCache.setIndexFile(new File(fldr, "tablet-refs.xml"));
+
+    }
+    
+    private void SetupDefaultParameters(){
+        WIDTH = 1900;
+        HEIGHT = 960;
+        FLANK = 7;
+        GridStartX = 200;
+        GridStartY = 100;
+        PanelSeparation = 215;
+        RenderColumns = 37;
+        ColumnWidth = 45;
+        RowHeight = 18;
+        FragmentXOffset = 15;
+        OutputType = "png";
+        PhenotypeColumn = 3;
+        UtilityFunctions.getInstance().ReadCountRenderThreshold = 0;
+        UtilityFunctions.getInstance().InsertionsOnlyAtVariant = false;
+        UtilityFunctions.getInstance().ReadColour_Unvaried = "#DCDCDC";
+        UtilityFunctions.getInstance().ReadColour_Varied = "#FFA500";
+        UtilityFunctions.getInstance().ReadColour_Insertion = "#8A2BE2";
     }
     
     private void OutputResultsToImage(Scene scene){
@@ -213,10 +320,8 @@ public class Engine{
         return details;
     }   
     
-    private File SetPrefsFile(String[] args){
+    private File SetPrefsFile(String filePath){
 
-        String filePath = args[0].substring(7);
-        
         //Read Engine Preferences
 	try (BufferedReader br = new BufferedReader(new FileReader(filePath+"prefs.txt")))
 	{

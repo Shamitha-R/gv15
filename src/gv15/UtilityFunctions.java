@@ -16,6 +16,7 @@ public class UtilityFunctions {
     public String ReadColour_Insertion;
     
     public CigarParser CigarParser = null;
+    public AppOptions AppOptions = new AppOptions();
     
     private static UtilityFunctions instance = new UtilityFunctions();
     

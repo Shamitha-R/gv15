@@ -1,0 +1,23 @@
+Tablet 1.15.09.01 on Windows 8.1 (amd64)
+Using C:\Users\ranasi01\.scri-bioinf\tablet.xml
+Ribbon UI created in 157ms
+
+testing C:\Users\ranasi01\Documents\Project\Data\data00.bam
+
+testing C:\Users\ranasi01\Documents\Project\Data\ref.fasta
+
+testing C:\Users\ranasi01\Documents\Project\Data\ref.fasta
+
+testing C:\Users\ranasi01\Documents\Project\Data\data00.bam
+Samtools extracted in 16ms
+Running IDXSTATS on C:\Users\ranasi01\Documents\Project\Data\data00.bam.bai
+
+Read time: 0.287s
+Loaded in: 2304
+Sorting...0ms
+Packed data in 0ms
+  Total reads packed: 0
+Loaded in: 1914
+Sorting...0ms
+Packed data in 0ms
+  Total reads packed: 26

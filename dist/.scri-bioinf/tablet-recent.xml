@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<tablet-mru>
+    <tablet>
+        <assembly>C:\Users\ranasi01\Documents\Project\Data\data00.bam</assembly>
+        <reference>C:\Users\ranasi01\Documents\Project\Data\ref.fasta</reference>
+    </tablet>
+    <tablet>
+        <assembly>C:\Users\ranasi01\Documents\Project\Data\data01.bam</assembly>
+        <reference>C:\Users\ranasi01\Documents\Project\Data\ref.fasta</reference>
+    </tablet>
+    <tablet>
+        <assembly>C:\Users\ranasi01\Documents\Project\Data\data00.bam</assembly>
+    </tablet>
+</tablet-mru>

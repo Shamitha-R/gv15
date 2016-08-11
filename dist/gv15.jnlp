@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="gv15.jar" size="141265" download="eager" />
+    <jar href="gv15.jar" size="143358" download="eager" />
     <jar href="lib\flamingo.jar" size="570193" download="eager" />
     <jar href="lib\fxgraphics2d-1.3-demo.jar" size="655044" download="eager" />
     <jar href="lib\fxgraphics2d-1.3.jar" size="17072" download="eager" />
@@ -32,8 +32,6 @@
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="gv15" >
     <param name="requiredFXVersion" value="8.0+"/>
   </applet-desc>
-  <jfx:javafx-desc  width="800" height="600" main-class="gv15.Gv15"  name="gv15" >
-    <fx:param name="path" value="C:\Users\ranasi01\Documents\Project\gv15\"/>
-  </jfx:javafx-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="gv15.Gv15"  name="gv15" />
   <update check="always"/>
 </jnlp>
