@@ -53,9 +53,8 @@ public class ReadManager {
 
                 //Call the Tablet library to load the sample data
                 try {
-                    int contigNumber = (Integer.parseInt(currentVariant.getContig().substring(3))-1);
                     tabletDataHandler.ExtractDataAtCoordinates(fileNames, startCoordinate, endCoordinate, 
-                            contigNumber,currentSample.FileName);
+                            ChromosomeToContig(currentVariant.getContig()),currentSample.FileName);
                 } catch (Exception ex) {
                     System.out.println("Error Reading Sample "+currentSample.FileName+". Sample Skipped.");
                     unhandledSamples.add(currentSample);
@@ -211,5 +210,25 @@ public class ReadManager {
         }
         
         return bases;
+    }
+    
+    private int ChromosomeToContig(String chr){
+        int contigNo = 0;
+
+        try{
+           contigNo= (Integer.parseInt(chr.substring(3)));
+        }catch(Exception e){
+           String chrVal = chr.substring(3);
+           switch(chrVal){
+               case "X": contigNo = 23;
+               break;
+               case "Y": contigNo = 24;
+               break;
+               case "M": contigNo = 25;
+               break;
+           }                  
+        }
+        
+        return contigNo -1;
     }
 }
