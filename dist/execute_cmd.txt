@@ -1,1 +1,0 @@
-java -jar gv15.jar --path=C:\Users\ranasi01\Documents\Project\gv15

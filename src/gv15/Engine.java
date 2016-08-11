@@ -218,7 +218,7 @@ public class Engine{
         String filePath = args[0].substring(7);
         
         //Read Engine Preferences
-	try (BufferedReader br = new BufferedReader(new FileReader(filePath+"\\prefs.txt")))
+	try (BufferedReader br = new BufferedReader(new FileReader(filePath+"prefs.txt")))
 	{
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {

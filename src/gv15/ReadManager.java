@@ -46,7 +46,7 @@ public class ReadManager {
 
                 //Sample and reference data input for Tablet
                 String[] fileNames  = new String[]{
-                    dataPath + "\\" + currentSample.FileName,
+                    dataPath + currentSample.FileName,
                     referenceManager.getReferencePath()
                 };
 

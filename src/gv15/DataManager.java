@@ -47,7 +47,7 @@ public class DataManager {
                 Phenotype tempPhenotype = new Phenotype();
                 tempPhenotype.FID = nextLine[0];
                 tempPhenotype.IID = nextLine[1];
-                tempPhenotype.FileName = "samples\\"+nextLine[2];
+                tempPhenotype.FileName = nextLine[2];
                 
                 if(!phenotypes.containsKey(nextLine[phenotypeColumn]))
                     phenotypes.put(nextLine[phenotypeColumn], new ArrayList());
