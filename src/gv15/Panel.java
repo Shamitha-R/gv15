@@ -219,7 +219,8 @@ public class Panel {
         int XOFFSET = FragmentXOffset;
         int YOFFSET = 4;
         int skippedFragments = 0;   
-        for(int colNum = 0;colNum<renderColumns;colNum++){
+        int renderedColumns = 0;
+        for(int colNum = 0;colNum<Fragments.length;colNum++){
             
             if(colNum >= Fragments.length)
                 break;
@@ -228,6 +229,9 @@ public class Panel {
                 skippedFragments++;
                 continue;
             }
+            if(renderedColumns >= renderColumns)
+                break;
+            renderedColumns++;
             
             for(int baseType = 0;baseType<5;baseType++){
                 
