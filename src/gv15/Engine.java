@@ -133,10 +133,11 @@ public class Engine{
         
         //Render for all Variants
         for(int i = 0;i<variantManager.TotalVariantCount;i++){
-        
+
             variantManager.setVariant(i);
             Group root = new Group();
-
+            System.out.println("Rendering variant "+variantManager.getSelectedVariant().getContig() + "_" + 
+                    variantManager.getSelectedVariant().getStart());
             panelManager[i].RenderPanels(root,referenceManager[i]);
 
             if(!TESTINGPANELS)
