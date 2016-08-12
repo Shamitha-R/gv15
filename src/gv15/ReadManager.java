@@ -38,7 +38,7 @@ public class ReadManager {
     
     public void LoadDataFromSamples(HashMap<String,ArrayList<Phenotype>> phenotypes,
             int startCoordinate,int endCoordinate,ReferenceManager referenceManager,
-            VariantContext currentVariant){
+            htsjdk.tribble.Feature currentVariant){
         for(String type:phenotypes.keySet()){
             //if(type.equals("Neg_Control")){
             ArrayList<Phenotype> unhandledSamples = new ArrayList();
@@ -54,7 +54,8 @@ public class ReadManager {
                 //Call the Tablet library to load the sample data
                 try {
                     tabletDataHandler.ExtractDataAtCoordinates(fileNames, startCoordinate, endCoordinate, 
-                            ChromosomeToContig(currentVariant.getContig()),currentSample.FileName);
+                            UtilityFunctions.getInstance().ChromosomeToContig(currentVariant.getContig()),
+                            currentSample.FileName);
                 } catch (Exception ex) {
                     System.out.println("Error Reading Sample "+currentSample.FileName+". Sample Skipped.");
                     unhandledSamples.add(currentSample);
@@ -223,23 +224,5 @@ public class ReadManager {
         return bases;
     }
     
-    private int ChromosomeToContig(String chr){
-        int contigNo = 0;
 
-        try{
-           contigNo= (Integer.parseInt(chr.substring(3)));
-        }catch(Exception e){
-           String chrVal = chr.substring(3);
-           switch(chrVal){
-               case "X": contigNo = 23;
-               break;
-               case "Y": contigNo = 24;
-               break;
-               case "M": contigNo = 25;
-               break;
-           }                  
-        }
-        
-        return contigNo -1;
-    }
 }

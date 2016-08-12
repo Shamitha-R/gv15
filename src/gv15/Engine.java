@@ -3,6 +3,7 @@ package gv15;
 import com.opencsv.CSVReader;
 import data.cache.ConsensusFileCache;
 import htsjdk.variant.variantcontext.Allele;
+import htsjdk.variant.variantcontext.VariantContext;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -196,6 +197,8 @@ public class Engine{
                 CachePath = parameterVal;
             else if(argType.equals("outputpath") || argType.equals("-outputpath"))
                 OutputPath = parameterVal;
+            else if(argType.equals("r") || argType.equals("-r"))
+                UtilityFunctions.getInstance().VariantCoordinate = parameterVal;
             else if(argType.equals("width") || argType.equals("-width"))
                 WIDTH = Double.parseDouble(parameterVal);
             else if(argType.equals("height") || argType.equals("-height"))
@@ -310,13 +313,17 @@ public class Engine{
         //details.setA
         
         String displayText = variantManager.getSelectedVariant().getContig() +
-                ":" + variantManager.getSelectedVariant().getStart() + " ";
+                ":" + variantManager.getSelectedVariant().getStart() + " " + 
+                variantManager.getSelectedVariant().getEnd() + " ";
         
-        for(Allele curAllele:variantManager.getSelectedVariant().getAlleles()){
-            for(byte base:curAllele.getBases()){
-                displayText+=Character.toString ((char) base);
+        if(variantManager.getSelectedVariant() instanceof VariantContext){
+            VariantContext tempContext = (VariantContext)variantManager.getSelectedVariant();
+            for(Allele curAllele:tempContext.getAlleles()){
+                for(byte base:curAllele.getBases()){
+                    displayText+=Character.toString ((char) base);
+                }
+                displayText+=">";
             }
-            displayText+=">";
         }
 
         details.setText(displayText.substring(0, displayText.length()-1));
@@ -348,6 +355,8 @@ public class Engine{
                     case "variantpath": VariantPath = parameterVal;
                         break;     
                     case "phenotypepath": PhenotypePath = parameterVal;
+                        break;
+                    case "r": UtilityFunctions.getInstance().VariantCoordinate = parameterVal;
                         break;
                     case "width": WIDTH = Double.parseDouble(parameterVal);
                         break;

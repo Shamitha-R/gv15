@@ -14,6 +14,7 @@ public class UtilityFunctions {
     public String ReadColour_Unvaried;
     public String ReadColour_Varied;
     public String ReadColour_Insertion;
+    public String VariantCoordinate;
     
     public CigarParser CigarParser = null;
     public AppOptions AppOptions = new AppOptions();
@@ -53,4 +54,24 @@ public class UtilityFunctions {
         
         return "N";
     }  
+    
+    public int ChromosomeToContig(String chr){
+        int contigNo = 0;
+
+        try{
+           contigNo= (Integer.parseInt(chr.substring(3)));
+        }catch(Exception e){
+           String chrVal = chr.substring(3);
+           switch(chrVal){
+               case "X": contigNo = 23;
+               break;
+               case "Y": contigNo = 24;
+               break;
+               case "M": contigNo = 25;
+               break;
+           }                  
+        }
+        
+        return contigNo -1;
+    }
 }

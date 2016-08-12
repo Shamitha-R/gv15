@@ -4,7 +4,8 @@ import data.Read;
 import data.auxiliary.CigarEvent;
 import data.auxiliary.CigarFeature;
 import data.auxiliary.CigarInsertEvent;
-import data.auxiliary.Feature;
+//import data.auxiliary.Feature;
+import htsjdk.tribble.Feature;
 import htsjdk.variant.variantcontext.VariantContext;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class FragmentManager {
     }
     
     public void ProcessFragments(HashMap<String,ArrayList<Phenotype>> phenotypes,ReferenceManager referenceManager,
-            PanelManager panelManager,int flank,VariantContext currentVariant) throws Exception{
+            PanelManager panelManager,int flank,Feature currentVariant) throws Exception{
         
         int startCoord = currentVariant.getStart() - flank;
         int endCoord  = currentVariant.getStart() + flank;

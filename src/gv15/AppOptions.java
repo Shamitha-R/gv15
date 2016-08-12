@@ -14,6 +14,7 @@ public class AppOptions {
             + " -phenotypepath={val}            Path of the Phenotypes .csv file.\n"
             + " -cachepath={val}                Path to dump application cache.\n"
             + " -outputpath={val}               Path to dump rendered images.\n"
+            + " -r={val}                        Chromosome number and coordinate of target variant. Ignores vcf file if present. FORMAT -r=chr{chromosome_num}_{cooridnate}."
             + " -width={val}                    Width of the rendered image. DEFAULT -width=1900.\n"
             + " -height={val}                   Height of the rendered image. DEFAULT -height=960.\n"
             + " -flank={val}                    Number of base pairs to left/right of variant. DEFAULT -flank=15.\n"
