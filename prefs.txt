@@ -4,7 +4,6 @@ variantpath=C:\Users\ranasi01\Documents\Project\Data\variants.vcf
 phenotypepath=C:\Users\ranasi01\Documents\Project\Data\phenotype.csv
 cachepath=D:\temp\
 outputpath=D:\
-r=chr1:871334
 width=2000
 height=960
 flank=15
