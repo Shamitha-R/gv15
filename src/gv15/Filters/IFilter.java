@@ -11,5 +11,5 @@ import java.util.Map;
 public interface IFilter {
     
     //Filters the panel fragments based on the filter type and parameters
-    public void FilterPanel(ArrayList<String> referenceData,Map<String,FragmentNode>[] Fragments);
+    public void FilterPanel(ArrayList<String> referenceData,Map<String,FragmentNode>[] Fragments,int varianceCoord);
 }

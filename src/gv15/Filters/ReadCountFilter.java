@@ -16,11 +16,12 @@ public class ReadCountFilter implements IFilter{
     Filter Panel with respect to the provided Minimum read count value
     */
     @Override
-    public void FilterPanel(ArrayList<String> referenceData, Map<String, FragmentNode>[] fragments) {
+    public void FilterPanel(ArrayList<String> referenceData, Map<String, FragmentNode>[] fragments,int varianceCoord) {
         int minReadCount = UtilityFunctions.getInstance().ReadCountRenderThreshold;
         
         int removedCount = 0;
         for(int columnNum=0;columnNum<fragments.length;columnNum++){
+            if(columnNum != varianceCoord){
             Iterator fragmentIter = new HashMap(fragments[columnNum]).keySet().iterator();
 
             while(fragmentIter.hasNext()){
@@ -39,8 +40,9 @@ public class ReadCountFilter implements IFilter{
                 referenceData.remove(columnNum-removedCount);
                 removedCount++;
             }
+            }
         }
-        System.err.println("");
+
     }
     
     private void RemoveFragmentConnections(String baseVal,int columnNo,

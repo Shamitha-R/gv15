@@ -71,7 +71,7 @@ public class Panel {
         ArrayList<String> rawReference = new ArrayList(refereneceData);
         //Exceute all the filters
         for(IFilter filter:panelFilters)
-            filter.FilterPanel(refereneceData, Fragments);
+            filter.FilterPanel(refereneceData, Fragments,Flank+offset);
         
         //Recalculate Offset
         int totalOffset = Flank+offset;
