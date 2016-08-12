@@ -159,17 +159,19 @@ public class ReadManager {
                 
                 InsertionArrays.put(type, new int[loadedReferences.get(type).size()]);
                 
+                //DA0071312_IonXpress_014_rawlib.bam 202
+                //DA0061636_IonXpress_011_rawlib.bam 295
+                
                 for(Phenotype currentSample:phenotypes.get(type)){
                     //If the current sample has any Inserts
                     if(InsertFeatures.containsKey(currentSample.FileName)){
                         for(InsertFeature feature:InsertFeatures.get(currentSample.FileName)){
                             
                             int insertedPos = (feature.StartCoodinate+1) - startCoordinate;
+
+                            Read targetRead = GetReadFromID(currentSample.FileName, feature.TargetReadID);
                             
-                            if(insertedPos>-1){
-                                
-                                if(feature.InsertedBases.size() == 6)
-                                    System.err.println("");
+                            if(insertedPos>-1 && ((startCoordinate-(targetRead.StartPosition+1)) + insertedPos) >= 0 ){
                                 
                                 if(InsertionArrays.get(type)[insertedPos] < feature.InsertedBases.size())
                                     InsertionArrays.get(type)[insertedPos] = feature.InsertedBases.size();
@@ -183,6 +185,15 @@ public class ReadManager {
     
     public ArrayList<Read> GetReadsForSample(String sampleName){
         return readCollection.get(sampleName);
+    }
+    
+    public Read GetReadFromID(String sampleName,int readID){
+        for(Read read:readCollection.get(sampleName)){
+            if(read.ReadID == readID)
+                return read;
+        }
+        
+        return null;
     }
     
     public int[] getInsertionArray(String phenotype){

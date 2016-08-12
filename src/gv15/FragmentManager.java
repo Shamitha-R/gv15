@@ -61,6 +61,7 @@ public class FragmentManager {
 
                     int insertCount = readManager.InsertionArrays.get(type)[columnNo];
                     int readCountForColumn = 0;
+         
                     //Loop through all the samples for the phenotype
                     for(int sampleNo = 0;sampleNo<phenotypes.get(type).size();sampleNo++){
 
@@ -68,6 +69,7 @@ public class FragmentManager {
                         int sampleReadCount = readManager.GetReadsForSample(
                                 phenotypes.get(type).get(sampleNo).FileName).size();
                         readCountForColumn+=sampleReadCount;
+               
                         //Loop through all the reads for the sample
                         for(int readNo = 0;readNo<sampleReadCount;readNo++){
                             gv15.Read currentRead = readManager.GetReadsForSample(
@@ -75,6 +77,7 @@ public class FragmentManager {
 
                             String[] readBases = currentRead.BaseValues;
                             //Ensure that the read is within the target region
+                            
                             int baseIndex = (startCoord - (currentRead.StartPosition+1)) + columnNo; 
 
                             if(baseIndex >= 0 && baseIndex < currentRead.Length){
@@ -122,9 +125,6 @@ public class FragmentManager {
                                         if( (baseIndex+1) < currentRead.Length)
                                             finalConnectedBase = readBases[baseIndex+1];
 
-                                        if(insFeature.InsertedBases.size() == 6)
-                                            System.err.println("");
-                                        
                                         AddInsertedBases(tempFrags, panelColumnNo+1, insFeature.InsertedBases,
                                                 finalConnectedBase,panelColumnNo+readManager.InsertionArrays.get(type)[columnNo]+1);
                                         
