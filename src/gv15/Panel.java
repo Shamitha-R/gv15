@@ -243,7 +243,7 @@ public class Panel {
                     FragmentNode val = Fragments[colNum].get(UtilityFunctions.
                             getInstance().RowNumberToBaseType(baseType));
                     
-                    float readSize = 1 + (val.ReadCount/(maxReadCount*1.0f)*13.0f);
+                    float readSize = 1 + (val.ReadCount/(maxReadCount*1.0f)*((float)rowHeight*0.8f));
                     
                     //Draw primary lines
                     Line tempLine = new Line();
@@ -291,7 +291,7 @@ public class Panel {
                                     int connectionEndColumn = GetConnectionEnd(colNum,colVal)-skippedFragments;    
                                     
                                     float nextReadSize = 1 + ((Fragments[colVal].get(connectedVal).ReadCount
-                                        /(maxReadCount*1.0f))*13.0f);    
+                                        /(maxReadCount*1.0f))*((float)rowHeight*0.8f));    
                                 
                                     if(nextBase == baseType){
                                         Line connectorLine = new Line();
